@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 441aca2e0acc70f4caaf0223d2e3262d, type: 3}
+  m_Name: CrucigramaData 1
+  m_EditorClassIdentifier: 
+  Operando_11: {fileID: 21300000, guid: 922068c051b9fdc4ab4599746c6722a9, type: 3}
+  Operando_12: {fileID: 21300000, guid: d3e71c9af9a89f7489d4f3ecfbb4f3f3, type: 3}
+  Operando_13: {fileID: 21300000, guid: 0f5d1d88ec726ca4da689e54da206788, type: 3}
+  Operando_21: {fileID: 21300000, guid: 0f5d1d88ec726ca4da689e54da206788, type: 3}
+  Operando_22: {fileID: 21300000, guid: c926ec6901d4ff6468805c6dbb5812bd, type: 3}
+  Operando_23: {fileID: 21300000, guid: 295092b99cc3a4441ae9a7ad4a14e162, type: 3}
+  Operando_31: {fileID: 21300000, guid: 295092b99cc3a4441ae9a7ad4a14e162, type: 3}
+  Operando_32: {fileID: 21300000, guid: 0f5d1d88ec726ca4da689e54da206788, type: 3}
+  Operando_33: {fileID: 21300000, guid: f137200108cd4dd489545117c1e7aa1c, type: 3}
+  Resultado_1: 3
+  Resultado_2: 2
+  Resultado_3: 4
