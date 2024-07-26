@@ -21,7 +21,7 @@ public class ControlPanelConocimiento : MonoBehaviour
         if (GameManager.gameManager != null)
         {
             int conocimientoActual = GameManager.gameManager.GetConocimiento();
-            int conocimientoMaximo = GameManager.gameManager.GetConocimientoDelNivel();
+            int conocimientoMaximo = GameManager.gameManager.GetConocimientoMaximoNivel();
 
             float porcentajeConocimiento = ((float)conocimientoActual / conocimientoMaximo) * 100f;
             sliderConocimiento.value = porcentajeConocimiento;

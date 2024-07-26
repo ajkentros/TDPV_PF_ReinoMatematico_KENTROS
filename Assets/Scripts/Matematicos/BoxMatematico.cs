@@ -9,7 +9,12 @@ public class BoxMatematico : MonoBehaviour
     //public static event Action OnPlayerCollideBoxMatematico; // Evento estático
     public static event Action<BoxMatematico> OnPlayerCollideBoxMatematico; // Evento estático con referencia al BoxMatematico
 
-    private PlayerControl playerControl; // Referencia al script del Player
+    // con delegado sería:
+    // public delegate void ColisionaConBoxMatematico(BoxMatematico box);
+    // public static event ColisionaConBoxMatematico OnPlayerCollideBoxMatematico; // Evento estático con referencia al BoxMatematico
+
+
+    //private PlayerControl playerControl; // Referencia al script del Player
 
     [Header("Texto")]
     [SerializeField] private TextMeshProUGUI letra; // Referencia al TextMeshPro del hijo
@@ -21,17 +26,17 @@ public class BoxMatematico : MonoBehaviour
 
     private void Start()
     {
-        // Buscar y asignar el PlayerControl en tiempo de ejecución
-        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        //// Buscar y asignar el PlayerControl en tiempo de ejecución
+        //GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
 
-        if (playerObject != null)
-        {
-            playerControl = playerObject.GetComponent<PlayerControl>();
-        }
-        else
-        {
-            Debug.LogError("No se encontró un objeto con la etiqueta 'Player' en la escena.");
-        }
+        //if (playerObject != null)
+        //{
+        //    playerControl = playerObject.GetComponent<PlayerControl>();
+        //}
+        //else
+        //{
+        //    Debug.LogError("No se encontró un objeto con la etiqueta 'Player' en la escena.");
+        //}
 
         animator = GetComponentInChildren<Animator>(); // Obtener el Animator del hijo
         boxCollider = GetComponent<Collider2D>(); // Obtener el Collider2D del BoxMatematico
@@ -47,12 +52,12 @@ public class BoxMatematico : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            // Desactivar el movimiento del Player
-            if (playerControl != null)
-            {
-                playerControl.SetMovimientoPlayer(false);
+            //// Desactivar el movimiento del Player
+            //if (playerControl != null)
+            //{
+            //    playerControl.SetMovimientoPlayer(false);
                 
-            }
+            //}
             
             // Desactivar el collider del BoxMatematico
             if (boxCollider != null)
@@ -94,7 +99,7 @@ public class BoxMatematico : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
 
-        playerControl.SetMovimientoPlayer(true);
+        //playerControl.SetMovimientoPlayer(true);
 
         Destroy(gameObject); // Destruir el GameObject
         

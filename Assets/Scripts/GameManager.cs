@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,8 +11,7 @@ public class GameManager : MonoBehaviour
     public delegate void VidasActualizadas(int vidas);
     public event VidasActualizadas OnVidasActualizadas;
 
-    public delegate void RepiteNivelActualizado(bool repiteNivel);
-    public event RepiteNivelActualizado OnRepiteNivelActualizado;
+
 
     [SerializeField] private int vidasInicio = 3;         // Referencia variable vidas del jugador
 
@@ -23,11 +22,12 @@ public class GameManager : MonoBehaviour
     private int[] conocimientoTotalNivel = new int[10];
     private readonly int[] conocimientoMaximoNivel = { 25, 25, 25, 25, 25, 25, 25, 25 };  // Conocimiento máximo por nivel
 
-    private int nivel;      // nivel = 0 es la escena 1 
+    private int nivel = 0;      // nivel = 0 es la escena 1 
 
     private readonly int maxVidas = 5;  // Máximo número de vidas
 
     private bool juegaNivel;  // Variable que indica si el nivel está en juego
+    private bool terminaNivel;
     private bool repiteNivel;
     private bool matematicoDescubierto;
     private bool juegoPausado;
@@ -42,13 +42,9 @@ public class GameManager : MonoBehaviour
         if (gameManager == null)
         {
             gameManager = this;
-
-            // Evita que el objeto GameManager se destruya al cargar una nueva escena.
             DontDestroyOnLoad(gameObject);
-            SceneManager.sceneLoaded += OnSceneLoaded; // Mover la suscripción aquí para asegurar que siempre esté activa
-
         }
-        else
+        else if (gameManager != this)
         {
             Destroy(gameObject);
         }
@@ -76,8 +72,6 @@ public class GameManager : MonoBehaviour
 
         VerificaEscenas();
 
-
-
         // Para debug y pruebas
         if (Input.GetKeyDown(KeyCode.L))
         {
@@ -91,9 +85,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded; // Mover la suscripción aquí para asegurar que siempre esté activa
+    }
 
-
-    private void OnDestroy()
+    private void OnDisable()
     {
         if (gameManager == this)
         {
@@ -189,13 +186,20 @@ public class GameManager : MonoBehaviour
 
     public void NivelTerminado()
     {
-        if (cronometro != null)
+        if (cronometro != null && matematicoDescubierto && vidasInicio >0)
         {
             juegaNivel = false;
+            terminaNivel = true;
             cronometro.DetenerTemporizador();
-            Debug.Log("Terminó el nivel " + "Tiempo total: " + cronometro.ObtenerTiempoTranscurrido());
+            //Debug.Log("Terminó el nivel " + "Tiempo total: " + cronometro.ObtenerTiempoTranscurrido());
+
+            // Incrementar el nivel una vez terminado
+            nivel++;
+            Debug.Log("Nivel completado. Nuevo nivel: " + nivel);
         }
     }
+
+    
 
     public void SetConocimiento(int _conocimiento)
     {
@@ -214,8 +218,13 @@ public class GameManager : MonoBehaviour
             conocimiento = 0;
         }
 
-        conocimientoTotalNivel[nivel] = conocimiento;
-        conocimientoTotal += _conocimiento;
+        int indice = nivel;
+        if (indice > 0)
+        {
+            indice--;
+        }
+        conocimientoTotalNivel[indice] = conocimiento;
+        conocimientoTotal += conocimientoTotalNivel[indice];
 
         Debug.Log(conocimiento);
     }
@@ -225,14 +234,29 @@ public class GameManager : MonoBehaviour
         return conocimiento;
     }
 
-    public int GetConocimientoDelNivel()
+    public int GetconocimientoTotalNivel(int _nivel)
     {
-        return conocimientoMaximoNivel[nivel];
+        int indice = nivel;
+        if (indice > 0)
+        {
+            indice --;
+        }
+        return conocimientoTotalNivel[indice];
     }
 
-    public void SetMatematicoDescubierto()
+    public int GetConocimientoMaximoNivel()
     {
-        matematicoDescubierto = !matematicoDescubierto;
+        int indice = nivel;
+        if (indice > 0)
+        {
+            indice--;
+        }
+        return conocimientoMaximoNivel[indice];
+    }
+
+    public void SetMatematicoDescubierto(bool _matematicoDescubierto)
+    {
+        matematicoDescubierto = _matematicoDescubierto;
     }
 
     public void PausarJuego()
@@ -302,19 +326,16 @@ public class GameManager : MonoBehaviour
         conocimientoTotal = 0;
         matematicoDescubierto = false;
         repiteNivel = false;
+        terminaNivel = false;
     }
 
     private void VerificaEscenas()
     {
         // Obtiene el índice de la escena actual
         int escenaActual = SceneManager.GetActiveScene().buildIndex;
-
-        if (escenaActual > 0)
-        {
-            // Asigna el nivel basado en la escena actual menos 1
-            nivel = escenaActual - 1; 
-            //Debug.Log("nivel = " + nivel);
-        }
+        
+        //Debug.Log("VerificaEscenas()" + escenaActual);
+        
         
     }
 
@@ -322,16 +343,32 @@ public class GameManager : MonoBehaviour
     {
         juegaNivel = false;
         repiteNivel = true;
-        Debug.Log("Disparando evento OnRepiteNivelActualizado");
-        OnRepiteNivelActualizado?.Invoke(repiteNivel);
 
-         
+        if (nivel > 0)
+        {
+            nivel--;
+        }
+        conocimientoTotalNivel[nivel] = 0;
+        
+
     }
 
     public bool GetRepiteNivel()
     {
-        return repiteNivel;
+        
+        return repiteNivel; 
     }
 
+    public bool GetTerminaNivel()
+    {
 
+        return terminaNivel;
+    }
+
+    public int GetNivel()
+    {
+        //Debug.Log("GetNivel()" + nivel);
+        return nivel;
+    }
+    
 }

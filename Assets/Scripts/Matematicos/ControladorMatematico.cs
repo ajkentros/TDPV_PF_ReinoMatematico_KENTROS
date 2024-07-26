@@ -4,24 +4,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Collections;
+using UnityEngine.UI;
 
 
 public class ControladorMatematico : MonoBehaviour
 {
-    //[Header("Prefabs BoxMatematico")]
-    //[SerializeField] private GameObject boxMatematicoPrefab; // Prefab del BoxCalculo
-
-    //[Header("Posiciones BoxMatematico")]
-    //[SerializeField] private Transform[] posicionesMatematico; // Array de posiciones para instanciar BoxCalculo
+    
     [Header("Paneles")]
     [SerializeField] private GameObject panelMatematico;   // PanelCalculo en el Canvas
     [SerializeField] private GameObject panelIngresarApellido; // Panel para ingresar el apellido
     [SerializeField] private TextMeshProUGUI apellidoMatematico;   // Texto donde se mostrarán las letras
     [SerializeField] private TextMeshProUGUI mensaje;   // PanelCalculo en el Canvas
     [SerializeField] private TMP_InputField inputApellido; // Campo de texto para ingresar el apellido
+    
 
     [Header("MatematicoData")]
     [SerializeField] private MatematicoData matematicoData;  // Array de ScriptableObjects
+
+    [Header("MatematicoData")]
+    [SerializeField] private PlayerControl playerControl; // Referencia al script del Player
 
     private List<char> letrasDesordenadas;
     private int indiceLetraActual;
@@ -64,6 +65,7 @@ public class ControladorMatematico : MonoBehaviour
             descripcionMatematico = matematicoData.descripcionMatematico;
             letrasDesordenadas = nombreMatematico.ToCharArray().OrderBy(x => UnityEngine.Random.Range(0, nombreMatematico.Length)).ToList();
             indiceLetraActual = 0;
+            apellidoMatematico.text = ""; // Limpia el texto de las letras encontradas
         }
         else
         {
@@ -73,7 +75,12 @@ public class ControladorMatematico : MonoBehaviour
 
     private void MuestraLetra(BoxMatematico box)
     {
-        
+        if (playerControl != null)
+        {
+            playerControl.SetMovimientoPlayer(false);
+
+        }
+
         if (indiceLetraActual < letrasDesordenadas.Count)
         {
             //Debug.Log(letrasDesordenadas[indiceLetraActual]);
@@ -84,74 +91,87 @@ public class ControladorMatematico : MonoBehaviour
                 panelMatematico.SetActive(true);
                 
             }
-
+            mensaje.gameObject.SetActive(true);
             mensaje.text = "Descubrieste la letra " + letrasDesordenadas[indiceLetraActual];
             apellidoMatematico.text += letrasDesordenadas[indiceLetraActual];
-            
-            StartCoroutine(LimpiarMensaje());
+
             indiceLetraActual++;
+            
 
             if (indiceLetraActual >= letrasDesordenadas.Count)
             {
-
-                StartCoroutine(MuestraAlerta());
-                mensaje.gameObject.SetActive(true);
-                ActivarPanelIngresarApellido();
+                // Si es la última letra, seguir con el programa
+                StartCoroutine(MostrarMensajesFinales());
             }
+            else
+            {
+                StartCoroutine(LimpiarMensaje());
+            }
+
         }
-        else
-        {
-            mensaje.text = "No hay más letras";
-            mensaje.gameObject.SetActive(true);
-        }
+        
 
         
     }
+
+    private IEnumerator MostrarMensajesFinales()
+    {
+        // Mostrar mensaje para ordenar letras después de 1 segundos
+        yield return new WaitForSeconds(1f);
+        mensaje.text = "Ordena las letras y descubre al matemático oculto";
+
+        // Mostrar descripción después de otros 3 segundos
+        yield return new WaitForSeconds(3f);
+        mensaje.text = descripcionMatematico;
+
+        // Activar el panel para ingresar el apellido
+        ActivarPanelIngresarApellido();
+    }
+
     public void ActivarPanelIngresarApellido()
     {
         
-        StartCoroutine(MuestraDescripcion());
-
-        mensaje.text = descripcionMatematico;
-
+        //mensaje.text = descripcionMatematico;
         if (panelIngresarApellido != null)
         {
-            Debug.Log("ingrese apellido");
+            //Debug.Log("ingrese apellido");
+
             panelIngresarApellido.SetActive(true);
-            inputApellido.characterLimit = letrasDesordenadas.Count; // Establecer el límite de caracteres
+            inputApellido.interactable = true;
+            inputApellido.characterLimit = nombreMatematico.Length; // Establecer el límite de caracteres
             inputApellido.onEndEdit.AddListener(VerificarApellido); // Añadir listener para verificar el apellido
-            //inputApellido.textComponent.color = Color.black; // Cambiar el color del texto ingresado
-            //inputApellido.GetComponent<Image>().color = Color.white; // Cambiar el color de fondo
-
-
-
+            
         }
     }
 
     private IEnumerator MuestraAlerta()
     {
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(5f);
 
         mensaje.text = "Ordena las letras y descubre al matemático oculto";
     }
 
     private IEnumerator MuestraDescripcion()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(5f);
 
         mensaje.text = descripcionMatematico;
     }
 
     private void VerificarApellido(string textoIngresado)
     {
-        Debug.Log("verifica apellido");
+        
         if (textoIngresado.Equals(nombreMatematico, StringComparison.OrdinalIgnoreCase))
         {
             mensaje.text = "Correcto";
-            GameManager.gameManager.SetMatematicoDescubierto();
+            
+            playerControl.SetMovimientoPlayer(true);
+            StartCoroutine(ResetControlMatematico());
+            GameManager.gameManager.SetMatematicoDescubierto(true);
         }
         else
         {
+            playerControl.SetMovimientoPlayer(false);
             intentosRestantes--;
             if (intentosRestantes > 0)
             {
@@ -162,9 +182,9 @@ public class ControladorMatematico : MonoBehaviour
             {
                 mensaje.text = "Fallaste. No te quedan más intentos.";
                 inputApellido.interactable = false;
-                StartCoroutine(ResetGame());
+                StartCoroutine(ResetControlMatematico());
                 GameManager.gameManager.RepiteNivel();
-                Debug.Log("RepiteNivel");
+                
             }
         }
 
@@ -179,19 +199,21 @@ public class ControladorMatematico : MonoBehaviour
     private IEnumerator LimpiarMensaje()
     {
         // Esperar 3 segundos
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(2);
 
         // Cambiar el mensaje inicial
         mensaje.text = "Busca más letras";
 
         // Esperar 3 segundos
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(1);
 
         // Restaurar el mensaje al original o a otro mensaje
         mensaje.text = "";
+
+        playerControl.SetMovimientoPlayer(true);
     }
 
-    private IEnumerator ResetGame()
+    private IEnumerator ResetControlMatematico()
     {
         yield return new WaitForSeconds(3);
         inputApellido.text = "";

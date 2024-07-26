@@ -67,7 +67,7 @@ public class ControlCrucigrama : MonoBehaviour
     private void Start()
     {
         if (panelCrucigrama != null) panelCrucigrama.SetActive(false); // Asegúrate de que el Panel está activado al inicio
-        if (mensaje != null) mensaje.gameObject.SetActive(false);
+        if (mensaje != null) mensaje.gameObject.SetActive(true);
 
         mensaje.text = ""; // Borrar el mensaje al iniciar
 

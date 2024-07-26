@@ -229,7 +229,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b16c5358c1457045a489b9a9ae8ece6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  player: {fileID: 3915733284330713582, guid: 9a70ba83ec352dd48876ce8ab6b19c8a, type: 3}
   distanciaMinima: 3
   distanciaMaxima: 7
   animator: {fileID: 4744676674066846123}

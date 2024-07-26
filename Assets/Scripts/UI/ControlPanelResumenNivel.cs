@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using TMPro;
-using UnityEditor;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,84 +9,93 @@ public class ControlPanelResumenNivel : MonoBehaviour
 {
     [SerializeField] private GameObject panelResumenNivel;
     [SerializeField] private GameObject boton;
-    [SerializeField] private TextMeshProUGUI mensaje;
-    [SerializeField] private Sprite spriteFondo;  // Imagen que se mostrará cuando el panel esté activo
-
-    private Image panelImage;
-
-    private void Awake()
-    {
-        // Obtener el componente Image del panel
-        panelImage = panelResumenNivel.GetComponent<Image>();
-    }
+    [SerializeField] private TextMeshProUGUI mensajeNivel;
+    [SerializeField] private TextMeshProUGUI textConocimientoObtenido;
+    [SerializeField] private TextMeshProUGUI conocimientoObtenido;
+    [SerializeField] private TextMeshProUGUI textConocimientoMaxNivel;
+    [SerializeField] private TextMeshProUGUI conocimientoMaxNivel;
 
 
-    private void OnEnable()
-    {
-        //GameManager.gameManager.OnRepiteNivelActualizado += ActualizaPanelResumenNivel; Debug.Log("ActualizaPanelResumenNivel");
+    //private Image panelImage;
+    private bool repiteNivel;
+    private bool terminaNivel;
 
-        if (GameManager.gameManager != null)
-        {
-            GameManager.gameManager.OnRepiteNivelActualizado += ActualizaPanelResumenNivel;
-            Debug.Log("Suscrito a OnRepiteNivelActualizado");
-        }
-        else
-        {
-            Debug.LogError("GameManager.gameManager es nulo en OnEnable de ControlPanelResumenNivel");
-        }
-    }
+    private int nivel;
 
-    private void OnDisable()
-    {
-        GameManager.gameManager.OnRepiteNivelActualizado -= ActualizaPanelResumenNivel;
-    }
+
 
     // Start is called before the first frame update
     void Start()
     {
-        // Asegura que el fondo esté transparente al inicio
-        Color colorTransparente = panelImage.color;
-        colorTransparente.a = 0f;  // Hacer completamente transparente
-        panelImage.color = colorTransparente;
-        mensaje.gameObject.SetActive(false);
-        boton.SetActive(false);
+        panelResumenNivel.SetActive(false);
+        
 
     }
 
-    
-    private void ActualizaPanelResumenNivel(bool repiteNivel)
+    private void Update()
     {
+        
 
-        if (repiteNivel)
+        ActualizaPanelResumenNivel();
+
+    }
+
+    private void ActualizaPanelResumenNivel()
+    {
+        repiteNivel = GameManager.gameManager.GetRepiteNivel();
+        terminaNivel = GameManager.gameManager.GetTerminaNivel();
+
+        ActualizaPanelResumenNivelRepiteNivel();
+
+        ActualizaPanelResumenNivelTerminaNivel();
+    }
+
+    private void ActualizaPanelResumenNivelTerminaNivel()
+    {
+        if (terminaNivel)
         {
+            panelResumenNivel.SetActive(true);
+            mensajeNivel.gameObject.SetActive(true);
+            panelResumenNivel.GetComponent<Image>().color = Color.green;
+
             // Cambiar el texto del mensaje
-            mensaje.gameObject.SetActive(true);
-            mensaje.text = "Tendrás que repetir el nivel";
+
+            mensajeNivel.text = "Ganaste el nivel";
+
+            nivel = GameManager.gameManager.GetNivel();
+            conocimientoObtenido.text = GameManager.gameManager.GetconocimientoTotalNivel(nivel).ToString();
+            conocimientoMaxNivel.text = GameManager.gameManager.GetConocimientoMaximoNivel().ToString();
 
             boton.SetActive(true);
 
-            // Cambiar el sprite del fondo
-            panelImage.sprite = spriteFondo;
 
-            // Cambiar el color para hacer el fondo opaco
-            Color colorOpaco = panelImage.color;
-            colorOpaco.r = 1f;  // Hacer completamente opaco
-            colorOpaco.g = 0f;  // Hacer completamente opaco
-            colorOpaco.b = 0f;  // Hacer completamente opaco
-            colorOpaco.a = 1f;  // Hacer completamente opaco
-            panelImage.color = colorOpaco;
         }
-        else
+    }
+
+    private void ActualizaPanelResumenNivelRepiteNivel()
+    {
+        if (repiteNivel)
         {
-            // Mantener el panel transparente si no se repite el nivel
-            Color colorTransparente = panelImage.color;
-            colorTransparente.a = 0f;
-            panelImage.color = colorTransparente;
+            panelResumenNivel.SetActive(true);
+            mensajeNivel.gameObject.SetActive(true);
+            // Cambiar el texto del mensaje
+            mensajeNivel.text = "Tendrás que repetir el nivel";
+            textConocimientoObtenido.gameObject.SetActive(false);
+            conocimientoObtenido.gameObject.SetActive(false);
+            textConocimientoMaxNivel.gameObject.SetActive(false);
+            conocimientoMaxNivel.gameObject.SetActive(false);
+
+            boton.SetActive(true);
+
+
+
         }
     }
 
     public void BotonInicioReino()
     {
         SceneManager.LoadScene(0);
+        
     }
+
 }
