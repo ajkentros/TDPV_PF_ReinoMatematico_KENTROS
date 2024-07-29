@@ -19,7 +19,7 @@
             {
                 "type": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
                 "key": "buildOutputDirList",
-                "value": "{\"m_Value\":\"C:/Users/User/Documents/GitHub/PROYECTO FINAL/TDPV_PF_ReinoMatematico_KENTROS/Build;C:/Users/User/Documents/GitHub/PROYECTO FINAL/TDPV_PF_ReinoMatematico_KENTROS/WebGL Builds;;;;;;;;\"}"
+                "value": "{\"m_Value\":\"C:/Users/User/Documents/GitHub/PROYECTO FINAL/TDPV_PF_ReinoMatematico_KENTROS/WebGL Builds;C:/Users/User/Documents/GitHub/PROYECTO FINAL/TDPV_PF_ReinoMatematico_KENTROS/Build;;;;;;;;\"}"
             }
         ]
     }
