@@ -192,7 +192,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 9035146256941775637}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.16666667
+  m_Radius: 0.34
   m_Speed: 3
   m_Acceleration: 8
   avoidancePriority: 50
@@ -201,8 +201,8 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 0.33333334
-  m_BaseOffset: 0.16666667
+  m_Height: 0.45
+  m_BaseOffset: 0.23
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &2392499606826317922
@@ -230,8 +230,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 3915733284330713582, guid: 9a70ba83ec352dd48876ce8ab6b19c8a, type: 3}
-  distanciaMinima: 3
-  distanciaMaxima: 7
+  distanciaMinima: 15
+  distanciaMaxima: 15
   animator: {fileID: 4744676674066846123}
   velocidadInicial: 2
   aceleracion: 0.5

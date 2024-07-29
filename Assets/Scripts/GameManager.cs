@@ -8,29 +8,30 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager gameManager;     // Referencia instancia estática del GameManager para acceder desde otros scripts
 
-    public delegate void VidasActualizadas(int vidas);
-    public event VidasActualizadas OnVidasActualizadas;
+    public delegate void VidasActualizadas(int vidas);      // Evento que se dispara cuando se actualizan las vidas
+    public event VidasActualizadas OnVidasActualizadas;     
 
-
+    public delegate void ConocimientoActualizado(int conocimiento);     //Evento que se dispara cuando se actualiza el conociento
+    public event ConocimientoActualizado OnConocimientoActualizado;
 
     [SerializeField] private int vidasInicio = 3;         // Referencia variable vidas del jugador
 
-    private Reloj cronometro;
+    private Reloj cronometro;       // Referencia a la clase Reloj para el cronómetro del juego
 
-    private int conocimiento;
-    private int conocimientoTotal;
-    private int[] conocimientoTotalNivel = new int[10];
+    private int conocimiento;       // Cuenta el conocimiento que se logra por cada desafío
+    private int conocimientoTotal;      // Cuenta el conocimiento total logrado en el jeugo
+    private int[] conocimientoTotalNivel = new int[10];     // Guarda el conocimiento logrado en cada nivel
     private readonly int[] conocimientoMaximoNivel = { 25, 25, 25, 25, 25, 25, 25, 25 };  // Conocimiento máximo por nivel
 
     private int nivel = 0;      // nivel = 0 es la escena 1 
 
     private readonly int maxVidas = 5;  // Máximo número de vidas
 
-    private bool juegaNivel;  // Variable que indica si el nivel está en juego
-    private bool terminaNivel;
-    private bool repiteNivel;
-    private bool matematicoDescubierto;
-    private bool juegoPausado;
+    private bool juegaNivel;        // Bandera que indica si el nivel está en juego
+    private bool terminaNivel;      // Bandera que avisa si termina el nivel
+    private bool repiteNivel;       // Bandera que avisa si se repite el nivel
+    private bool matematicoDescubierto;     // Bandera que avisa si se descubrió el matemático
+    private bool juegoPausado;      // Bandera que avisa si el juego se pausó
 
 
 
@@ -106,6 +107,8 @@ public class GameManager : MonoBehaviour
         // Verifica si la escena es una de las escenas de juego
         if (scene.buildIndex != 0)  // Si el índice de la escena es diferente de 0
         {
+            AudioManager.audioManager.StopMusicaFondo(0);
+            AudioManager.audioManager.PlayMusicaFondo(1);
 
             // Buscar el objeto que contiene el script Reloj
             GameObject reloj = GameObject.Find("Reloj"); //Debug.Log("encontró el reloj ");
@@ -226,6 +229,7 @@ public class GameManager : MonoBehaviour
         conocimientoTotalNivel[indice] = conocimiento;
         conocimientoTotal += conocimientoTotalNivel[indice];
 
+        OnConocimientoActualizado?.Invoke(_conocimiento);
         Debug.Log(conocimiento);
     }
 
@@ -327,6 +331,8 @@ public class GameManager : MonoBehaviour
         matematicoDescubierto = false;
         repiteNivel = false;
         terminaNivel = false;
+        AudioManager.audioManager.PlayMusicaFondo(0);
+        AudioManager.audioManager.StopSonidos();
     }
 
     private void VerificaEscenas()

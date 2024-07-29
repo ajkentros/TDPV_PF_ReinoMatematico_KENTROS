@@ -140,6 +140,8 @@ public class ControlCrucigrama : MonoBehaviour
     // Método para activar los paneles
     private void HayColisionConBoxCrucigrama()
     {
+        AudioManager.audioManager.StopMusicaFondo(1);
+        AudioManager.audioManager.PlaySonidos(0);
         hayColisionConBoxCrucigrama = true;
 
         if (indiceActual < indicesDisponibles.Count)
@@ -436,6 +438,9 @@ public class ControlCrucigrama : MonoBehaviour
         hayColisionConBoxCrucigrama = false;
 
         shouldValidate = false; // Deshabilitar la validación después de la primera llamada
+
+        AudioManager.audioManager.StopSonido(0);
+        AudioManager.audioManager.PlayMusicaFondo(1);
     }
 
     private void LimpiarImagenes()

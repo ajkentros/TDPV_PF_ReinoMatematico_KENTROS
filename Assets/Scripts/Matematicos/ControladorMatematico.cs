@@ -75,6 +75,9 @@ public class ControladorMatematico : MonoBehaviour
 
     private void MuestraLetra(BoxMatematico box)
     {
+        AudioManager.audioManager.StopMusicaFondo(1);
+        AudioManager.audioManager.PlaySonidos(2);
+
         if (playerControl != null)
         {
             playerControl.SetMovimientoPlayer(false);
@@ -107,11 +110,11 @@ public class ControladorMatematico : MonoBehaviour
             {
                 StartCoroutine(LimpiarMensaje());
             }
-
+            
         }
-        
 
         
+
     }
 
     private IEnumerator MostrarMensajesFinales()
@@ -187,7 +190,8 @@ public class ControladorMatematico : MonoBehaviour
                 
             }
         }
-
+        
+        
     }
 
     private IEnumerator LimpiarInputField()
@@ -211,6 +215,8 @@ public class ControladorMatematico : MonoBehaviour
         mensaje.text = "";
 
         playerControl.SetMovimientoPlayer(true);
+        AudioManager.audioManager.StopSonido(2);
+        AudioManager.audioManager.PlayMusicaFondo(1);
     }
 
     private IEnumerator ResetControlMatematico()
@@ -223,5 +229,8 @@ public class ControladorMatematico : MonoBehaviour
         panelIngresarApellido.SetActive(false);
         panelMatematico.SetActive(false);
         mensaje.gameObject.SetActive(false);
+        AudioManager.audioManager.StopSonido(2);
+        AudioManager.audioManager.PlayMusicaFondo(1);
+
     }
 }

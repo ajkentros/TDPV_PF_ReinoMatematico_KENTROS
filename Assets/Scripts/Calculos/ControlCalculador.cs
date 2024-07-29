@@ -91,6 +91,7 @@ public class ControladorCalculos : MonoBehaviour
     {
         if (temporizador != null && sliderTemporizador != null)
         {
+            
             float tiempoRestante = temporizador.ObtenerTiempoRestante();
             sliderTemporizador.value = tiempoRestante / tiempoParaResolver; // Actualiza el valor del slider
 
@@ -118,6 +119,8 @@ public class ControladorCalculos : MonoBehaviour
 
     private void HayColisionConBoxCalculo()
     {
+        AudioManager.audioManager.StopMusicaFondo(1);
+        AudioManager.audioManager.PlaySonidos(0);
 
         hayColisionConBoxCalculo = true;
 
@@ -277,6 +280,7 @@ public class ControladorCalculos : MonoBehaviour
 
         // Desactivar los paneles y limpiar las imágenes después de 5 segundos
         StartCoroutine(DesactivarPanelesYLimpiar());
+        
     }
 
     private void DesuscribirEventos()
@@ -316,6 +320,8 @@ public class ControladorCalculos : MonoBehaviour
         hayColisionConBoxCalculo = false;
         // Reactivar el movimiento del player
         playerControl.SetMovimientoPlayer(true);
+        AudioManager.audioManager.StopSonido(0);
+        AudioManager.audioManager.PlayMusicaFondo(1);
     }
 
     private void LimpiarImagenes()

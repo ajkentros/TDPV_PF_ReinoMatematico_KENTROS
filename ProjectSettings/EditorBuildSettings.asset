@@ -12,6 +12,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Reino_Suma_1.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 0
-    path: Assets/Scenes/New Scene 1.unity
+    path: Assets/Scenes/Scene Prueba.unity
     guid: b487d520d68624e42b12a379cea0f919
   m_configObjects: {}

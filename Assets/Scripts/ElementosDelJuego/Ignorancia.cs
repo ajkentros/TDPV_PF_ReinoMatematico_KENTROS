@@ -1,127 +1,161 @@
 
+
 using UnityEngine;
+
 
 
 public class Ignorancia : MonoBehaviour
 {
-    public Transform player;
-    public float followDistance = 10f;
-    public float stopFollowDistance = 15f;
-    public float speed = 2f;
-    public float raycastDistance = 1f; // Distancia del raycast para detectar obstáculos
-    public int angleStep = 10; // Step en grados para revisar los ángulos
-    public LayerMask obstacleMask; // LayerMask para los obstáculos
+    [SerializeField] private float radioBusqueda; // Ahora será el ancho del rectángulo
+    [SerializeField] private float alturaBusqueda; // Nueva variable para la altura del rectángulo
+    [SerializeField] private LayerMask capaPlayer;
+    [SerializeField] private LayerMask capaObstaculo; // Nueva capa para detectar obstáculos
+    [SerializeField] private Transform transformPlayer;
+    [SerializeField] private float velocidadIgnorancia;
+    [SerializeField] private float distanciaMaxima;
 
-    private bool isFollowing = false;
-    private bool isSearchingDirection = false;
-    private Rigidbody2D rb;
-    private Vector2 currentDirection;
+    private Vector3 puntoInicialIgnorancia;
+    private bool miraIgnooranciaDerecha;
+    [SerializeField] private Rigidbody2D rigidBody2DIgnorancia;
+    [SerializeField] private Animator animatorIgnorancia;
 
-    void Start()
+
+    public EstadosDeIgnorancia estadoActual;
+
+    public enum EstadosDeIgnorancia
     {
-        rb = GetComponent<Rigidbody2D>();
-        currentDirection = Vector2.zero;
+        Espera,
+        SiguieAlPlayer,
+        Frena,
     }
 
-    void Update()
+    private void Start()
     {
-        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
-        if (distanceToPlayer < followDistance)
-        {
-            isFollowing = true;
-        }
-        else if (distanceToPlayer > stopFollowDistance)
-        {
-            isFollowing = false;
-        }
+        puntoInicialIgnorancia = transform.position;
     }
-
-    void FixedUpdate()
+    private void Update()
     {
-        if (isFollowing)
-        {
-            if (!isSearchingDirection)
-            {
-                FollowPlayer();
-            }
-            else
-            {
-                SearchNewDirection();
-            }
-        }
-        else
-        {
-            rb.velocity = Vector2.zero;
-        }
-    }
 
-    void FollowPlayer()
-    {
-        Vector2 direction = (player.position - transform.position).normalized;
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, raycastDistance, obstacleMask);
-        Debug.DrawRay(transform.position, direction * raycastDistance, Color.yellow); // Para visualizar los rayos
-
-        if (hit.collider == null)
+        switch (estadoActual)
         {
-            // No hay obstáculos, sigue al jugador
-            currentDirection = direction;
-            rb.velocity = currentDirection * speed;
-        }
-        else
-        {
-            // Obstáculo detectado, busca una nueva dirección
-            isSearchingDirection = true;
-            rb.velocity = Vector2.zero;
-        }
-    }
-
-    void SearchNewDirection()
-    {
-        Vector2 direction = (player.position - transform.position).normalized;
-        bool foundClearPath = false;
-
-        for (int i = 0; i < 360; i += angleStep)
-        {
-            Vector2 newDirection = Quaternion.Euler(0, 0, i) * direction;
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, newDirection, raycastDistance, obstacleMask);
-            Debug.DrawRay(transform.position, newDirection * raycastDistance, Color.red); // Para visualizar los rayos
-
-            if (hit.collider == null)
-            {
-                // Nueva dirección libre encontrada
-                currentDirection = newDirection;
-                rb.velocity = currentDirection * speed;
-                foundClearPath = true;
+            case EstadosDeIgnorancia.Espera:
+                EstadoEspera();
                 break;
-            }
+
+            case EstadosDeIgnorancia.SiguieAlPlayer:
+                EstadoSiguieAlPlayer();
+                break;
+
+            case EstadosDeIgnorancia.Frena:
+                EstadoFrena();
+                break;
+
         }
 
-        if (!foundClearPath)
+    }
+
+    private void EstadoEspera()
+    {
+        Collider2D playerCollider = Physics2D.OverlapBox(transform.position, new Vector2(radioBusqueda, alturaBusqueda), 0f, capaPlayer);
+
+        if (playerCollider)
         {
-            // Si no encuentra una dirección libre, se detiene
-            rb.velocity = Vector2.zero;
+            transformPlayer = playerCollider.transform;
+
+            estadoActual = EstadosDeIgnorancia.SiguieAlPlayer;
+        }
+    }
+
+    private void EstadoSiguieAlPlayer()
+    {
+        animatorIgnorancia.SetBool("Volando", true);
+
+        if (transformPlayer == null)
+        {
+            estadoActual = EstadosDeIgnorancia.Frena;
+            return;
+        }
+
+        // Detectar obstáculos
+        if (Physics2D.OverlapBox(transform.position, new Vector2(radioBusqueda, alturaBusqueda), 0f, capaObstaculo))
+        {
+            estadoActual = EstadosDeIgnorancia.Frena;
+            transformPlayer = null;
+            return;
+        }
+
+        if (transform.position.x < transformPlayer.position.x)
+        {
+            rigidBody2DIgnorancia.velocity = new Vector2(velocidadIgnorancia, rigidBody2DIgnorancia.velocity.y);
         }
         else
         {
-            // Una vez que encuentra una dirección libre, verifica si puede ver al jugador
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, raycastDistance, obstacleMask);
-            Debug.DrawRay(transform.position, direction * raycastDistance, Color.blue); // Para visualizar los rayos
-            if (hit.collider == null)
-            {
-                // Si puede ver al jugador, vuelve a seguirlo
-                isSearchingDirection = false;
-            }
+            rigidBody2DIgnorancia.velocity = new Vector2(-velocidadIgnorancia, rigidBody2DIgnorancia.velocity.y);
+        }
+
+        GiraIgnorancia(transform.position);
+
+        if (Vector2.Distance(transform.position, puntoInicialIgnorancia) > distanciaMaxima || Vector2.Distance(transform.position, transformPlayer.position) > distanciaMaxima)
+        {
+            estadoActual = EstadosDeIgnorancia.Frena;
+            transformPlayer = null;
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    private void EstadoFrena()
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if (transformPlayer == null)
         {
-            Destroy(gameObject);
+            estadoActual = EstadosDeIgnorancia.Frena;
+            return;
+        }
+
+        if (transform.position.x < puntoInicialIgnorancia.x)
+        {
+            rigidBody2DIgnorancia.velocity = new Vector2(velocidadIgnorancia, rigidBody2DIgnorancia.velocity.y);
+        }
+        else
+        {
+            rigidBody2DIgnorancia.velocity = new Vector2(-velocidadIgnorancia, rigidBody2DIgnorancia.velocity.y);
+        }
+
+        GiraIgnorancia(puntoInicialIgnorancia);
+
+        if (Vector2.Distance(transform.position, puntoInicialIgnorancia) < 0.1f)
+        {
+            rigidBody2DIgnorancia.velocity = Vector2.zero;
+
+            animatorIgnorancia.SetBool("Volando", false);
+
+            estadoActual = EstadosDeIgnorancia.Espera;
         }
     }
+
+    private void GiraIgnorancia(Vector3 ignorancia)
+    {
+        if (ignorancia.x > transform.position.x && !miraIgnooranciaDerecha)
+        {
+            Gira();
+        }
+        else if (ignorancia.x < transform.position.x && miraIgnooranciaDerecha)
+        {
+            Gira();
+        }
+    }
+
+    private void Gira()
+    {
+        miraIgnooranciaDerecha = !miraIgnooranciaDerecha;
+        transform.eulerAngles = new Vector3(0, transform.eulerAngles.y + 180, 0);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(transform.position, new Vector2(radioBusqueda, alturaBusqueda)); // Cambiado para un rectángulo
+        Gizmos.DrawWireCube(puntoInicialIgnorancia, new Vector2(distanciaMaxima, alturaBusqueda));
+    }
+
 }
 
 

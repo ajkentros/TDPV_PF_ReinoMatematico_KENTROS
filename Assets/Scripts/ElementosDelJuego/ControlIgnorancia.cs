@@ -1,11 +1,13 @@
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class ControlIgnorancia : MonoBehaviour
 {
     [SerializeField] private Transform player;                  // Referencia al player
-    [SerializeField] private float distanciaMinima = 2f;        // Distancia mínima para seguir al player
-    [SerializeField] private float distanciaMaxima = 5f;        // Distancia máxima para dejar de seguir al player
+    [SerializeField] private float distanciaMinima;        // Distancia mínima para seguir al player
+    [SerializeField] private float distanciaMaxima;        // Distancia máxima para dejar de seguir al player
     [SerializeField] private Animator animator;                 // Referencia al Animator
     [SerializeField] private float velocidadInicial = 3f;     // Velocidad inicial del NavMeshAgent
     [SerializeField] private float aceleracion = 0.1f;  // Incremento de velocidad por segundo
@@ -31,7 +33,7 @@ public class ControlIgnorancia : MonoBehaviour
         // Verificar si el NavMeshAgent está en el NavMesh
         if (!navMeshAgent.isOnNavMesh)
         {
-            Debug.LogError("El NavMeshAgent no está en el NavMesh. Asegúrate de que el agente esté colocado correctamente.");
+            Debug.LogError("No hay NavMesh");
         }
     }
 
@@ -54,6 +56,7 @@ public class ControlIgnorancia : MonoBehaviour
 
         if (estaVolando)
         {
+            
             if (navMeshAgent.isOnNavMesh)
             {
                 navMeshAgent.SetDestination(player.position);
@@ -61,7 +64,7 @@ public class ControlIgnorancia : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Ignorancia no está en el NavMesh y no puede establecer un destino.");
+                Debug.LogWarning("Ignorancia no está en el NavMesh");
             }
         }
         else
@@ -82,10 +85,13 @@ public class ControlIgnorancia : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             // Reduce la vida del player
+            AudioManager.audioManager.SetLoopSonidos(1, false);
+            AudioManager.audioManager.PlaySonidos(1);
             GameManager.gameManager.DecrementaVidas();
-            // Destruye Ignorancia al colisionar con el player
+            
             Destroy(gameObject);
         }
     }
+
 }
 
