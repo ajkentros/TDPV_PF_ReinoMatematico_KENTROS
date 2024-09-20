@@ -71,6 +71,7 @@ public class Reloj : MonoBehaviour
         estaCorriendoTemporizador = false;
     }
 
+    // Gestiona el cambio de bandera para avisar que el cronómetro corre
     public void IniciarCronometro()
     {
         //Debug.Log("IniciarCronometro()");
@@ -82,6 +83,7 @@ public class Reloj : MonoBehaviour
         }
     }
 
+    // Gestiona el cambio de bandera para avisar que el cronómetro no corre
     public void DetenerCronometro()
     {
         estaCorriendoCronometro = false;

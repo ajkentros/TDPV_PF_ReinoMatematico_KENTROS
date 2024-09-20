@@ -425,7 +425,7 @@ public class ControlCrucigrama : MonoBehaviour
         yield return new WaitForSeconds(tiempoPanelCrucigrama);
 
         if (panelCrucigrama != null) panelCrucigrama.SetActive(false);
-        if (mensaje != null) mensaje.gameObject.SetActive(false);
+        if (mensaje != null) mensaje.text = "";
 
         LimpiarImagenes();
 

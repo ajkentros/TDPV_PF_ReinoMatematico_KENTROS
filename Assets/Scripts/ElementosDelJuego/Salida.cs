@@ -3,20 +3,22 @@ using UnityEngine;
 
 public class Salida : MonoBehaviour
 {
-    // Gestiona cuando otro collider entra en el trigger
+    // Gestiona el trigger
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Comprobamos si el objeto que entra en el trigger es el jugador
+        
+        // Comprueba si el objeto que entra en el trigger es el jugador
         if (other.CompareTag("Player"))
         {
-            // Llamamos al método para ganar el juego
+            //Debug.Log("el player llegó al final del laberinto");
+            // Llama al método para ganar el juego
             DetieneAnimacionPlayer(other.gameObject);
         }
 
-        // Notificar al GameManager que el juego ha terminado
+        // Notifica al GameManager que el juego ha terminado
         if (GameManager.gameManager != null)
         {
-            GameManager.gameManager.NivelTerminado();
+            GameManager.gameManager.TerminaNivel();
         }
     }
 
@@ -30,6 +32,8 @@ public class Salida : MonoBehaviour
             playerControl.DetenerAnimacion();
         }
 
-        
+        AudioManager.audioManager.StopSonidos();
+        AudioManager.audioManager.StopMusicaFondo(1);
+        AudioManager.audioManager.PlayMusicaFondo(0);
     }
 }

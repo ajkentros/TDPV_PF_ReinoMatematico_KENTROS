@@ -34,9 +34,12 @@ public class PlayerControl : MonoBehaviour
     {
         if (!movimientoHabilitado)
         {
+            entradaMovimiento = Vector2.zero;           // Detiene el movimiento si no está habilitado
+           
+            animacionPlayer.SetFloat("Velocidad", 0);   // Asegura que la animación también se detenga
             return;
         }
-
+        
         float movimientoX = Input.GetAxisRaw("Horizontal");
         float movimientoY = Input.GetAxisRaw("Vertical");
 
@@ -45,8 +48,9 @@ public class PlayerControl : MonoBehaviour
         animacionPlayer.SetFloat("Horizontal", movimientoX);
         animacionPlayer.SetFloat("Vertical", movimientoY);
         animacionPlayer.SetFloat("Velocidad", entradaMovimiento.sqrMagnitude);
+        
 
-       
+
     }
 
     private void FixedUpdate()
@@ -69,10 +73,13 @@ public class PlayerControl : MonoBehaviour
 
     public void SetMovimientoPlayer(bool habilitado)
     {
+        //Debug.Log("SetMovimientoPlayer =" + habilitado);
         movimientoHabilitado = habilitado;
-        if (!habilitado)
+        if (!movimientoHabilitado)
         {
+            entradaMovimiento = Vector2.zero;           // Reinicia el vector de movimiento
             animacionPlayer.SetFloat("Velocidad", 0);
+            
         }
     }
 

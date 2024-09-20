@@ -11,10 +11,10 @@ public class ControladorCalculos : MonoBehaviour
    
 
     [Header("Paneles")]
-    [SerializeField] private GameObject panelCalculo;   // PanelCalculo en el Canvas
-    [SerializeField] private GameObject panelOpciones;   // PanelCalculo en el Canvas
-    [SerializeField] private TextMeshProUGUI mensaje;   // PanelCalculo en el Canvas
-    [SerializeField] private Slider sliderTemporizador;   // PanelCalculo en el Canvas
+    [SerializeField] private GameObject panelCalculo;       // PanelCalculo en el Canvas
+    [SerializeField] private GameObject panelOpciones;      // PanelCalculo en el Canvas
+    [SerializeField] private TextMeshProUGUI mensaje;       // PanelCalculo en el Canvas
+    [SerializeField] private Slider sliderTemporizador;     // PanelCalculo en el Canvas
     
     // Referencias a los componentes de imagen de los paneles
     [Header("Operandos")]
@@ -36,7 +36,7 @@ public class ControladorCalculos : MonoBehaviour
     [Header("Tablero de tiempo")]
     [SerializeField] private Reloj temporizador;
     [SerializeField] private int tiempoPanelCalculo;
-    [SerializeField] private float tiempoParaResolver = 5f;
+    [SerializeField] private float tiempoParaResolver = 10f;
 
 
     private List<int> indicesDisponibles; // Lista de índices disponibles
@@ -47,8 +47,6 @@ public class ControladorCalculos : MonoBehaviour
     private bool hayColisionConBoxCalculo;
 
 
-    //private int calculosResueltos;
-    //private int calculosTotales = 20;
 
     private void OnEnable()
     {
@@ -71,9 +69,8 @@ public class ControladorCalculos : MonoBehaviour
     {
         if (panelCalculo != null) panelCalculo.SetActive(false); // Asegúrate de que el Panel está desactivado al inicio
         if (panelOpciones != null) panelOpciones.SetActive(false);
-        if (mensaje != null) mensaje.gameObject.SetActive(true);
+        //if (mensaje != null) mensaje.text = "";
 
-        //InstanciarBoxCalculos();
 
         //Inicializar la lista de índices disponibles y barajarla
         indicesDisponibles = new List<int>();
@@ -119,8 +116,12 @@ public class ControladorCalculos : MonoBehaviour
 
     private void HayColisionConBoxCalculo()
     {
+        // Desactiva el movimiento del player
+        playerControl.SetMovimientoPlayer(false);      //Debug.Log("detiene al player");
+
         AudioManager.audioManager.StopMusicaFondo(1);
         AudioManager.audioManager.PlaySonidos(0);
+        
 
         hayColisionConBoxCalculo = true;
 
@@ -174,11 +175,10 @@ public class ControladorCalculos : MonoBehaviour
                 // Activar los paneles
                 if (panelCalculo != null) panelCalculo.SetActive(true);
                 if (panelOpciones != null) panelOpciones.SetActive(true);
-                if (mensaje != null) mensaje.text = "completa la operación";
-                mensaje.gameObject.SetActive(true);
+                if (mensaje != null) mensaje.text = "arrastra el número que falta";
+                //mensaje.gameObject.SetActive(true);
 
-                // Desactiva el movimiento del player
-                playerControl.SetMovimientoPlayer(false);
+                
             }
         }
         else
@@ -312,16 +312,19 @@ public class ControladorCalculos : MonoBehaviour
 
         if (panelCalculo != null) panelCalculo.SetActive(false);
         if (panelOpciones != null) panelOpciones.SetActive(false);
-        if (mensaje != null) mensaje.gameObject.SetActive(false);
+        mensaje.text = "";
 
         LimpiarImagenes();
         ResetOpcionesPosition();
 
         hayColisionConBoxCalculo = false;
-        // Reactivar el movimiento del player
-        playerControl.SetMovimientoPlayer(true);
+        
+        //
         AudioManager.audioManager.StopSonido(0);
         AudioManager.audioManager.PlayMusicaFondo(1);
+
+        // Reactivar el movimiento del player
+        playerControl.SetMovimientoPlayer(true);
     }
 
     private void LimpiarImagenes()

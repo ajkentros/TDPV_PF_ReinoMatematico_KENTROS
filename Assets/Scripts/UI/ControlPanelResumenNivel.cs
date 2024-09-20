@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class ControlPanelResumenNivel : MonoBehaviour
 {
     [SerializeField] private GameObject panelResumenNivel;
-    [SerializeField] private GameObject boton;
+    [SerializeField] private GameObject botonContinua;
     [SerializeField] private TextMeshProUGUI mensajeNivel;
     [SerializeField] private TextMeshProUGUI textConocimientoObtenido;
     [SerializeField] private TextMeshProUGUI conocimientoObtenido;
@@ -16,86 +16,88 @@ public class ControlPanelResumenNivel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI conocimientoMaxNivel;
 
 
-    //private Image panelImage;
-    private bool repiteNivel;
-    private bool terminaNivel;
-
     private int nivel;
 
+    private void OnEnable()
+    {
+        // Suscribe los métodos a los eventos
+        GameManager.gameManager.OnNivelTerminado += ActualizaPanelResumenNivelTerminaNivel;
+        GameManager.gameManager.OnNivelRepetido += ActualizaPanelResumenNivelRepiteNivel;
+    }
 
-
+    private void OnDisable()
+    {
+        GameManager.gameManager.OnNivelTerminado -= ActualizaPanelResumenNivelTerminaNivel;
+        GameManager.gameManager.OnNivelRepetido -= ActualizaPanelResumenNivelRepiteNivel;
+    }
     // Start is called before the first frame update
     void Start()
     {
+        // Desactiva PanelResumen
         panelResumenNivel.SetActive(false);
+
         
 
-    }
-
-    private void Update()
-    {
-        
-
-        ActualizaPanelResumenNivel();
+       
 
     }
 
-    private void ActualizaPanelResumenNivel()
-    {
-        repiteNivel = GameManager.gameManager.GetRepiteNivel();
-        terminaNivel = GameManager.gameManager.GetTerminaNivel();
-
-        ActualizaPanelResumenNivelRepiteNivel();
-
-        ActualizaPanelResumenNivelTerminaNivel();
-    }
-
+    // Gestiona la actualización del PanelResumen cuando el nivel se termina
     private void ActualizaPanelResumenNivelTerminaNivel()
     {
-        if (terminaNivel)
-        {
-            panelResumenNivel.SetActive(true);
-            mensajeNivel.gameObject.SetActive(true);
-            panelResumenNivel.GetComponent<Image>().color = Color.green;
+        // Actualiza paneles
+        panelResumenNivel.SetActive(true);
+        mensajeNivel.gameObject.SetActive(true);
+        panelResumenNivel.GetComponent<Image>().color = Color.green;
 
-            // Cambiar el texto del mensaje
+        // Cambiar el texto del mensaje
+        mensajeNivel.text = "Ganaste el nivel";
 
-            mensajeNivel.text = "Ganaste el nivel";
+        // Asigna el valor del nivel jugado
+        nivel = GameManager.gameManager.GetNivel();
 
-            nivel = GameManager.gameManager.GetNivel();
-            conocimientoObtenido.text = GameManager.gameManager.GetconocimientoTotalNivel(nivel).ToString();
-            conocimientoMaxNivel.text = GameManager.gameManager.GetConocimientoMaximoNivel().ToString();
+        // Usa el nivel como índice, restando 1 porque los arrays empiezan en 0, pero asegurando que no es negativo
+        int indice = Mathf.Max(nivel - 1, 0);
 
-            boton.SetActive(true);
+        // Actualiza textos en pantalla
+        conocimientoObtenido.text = GameManager.gameManager.GetconocimientoTotalNivel(indice).ToString();
+        conocimientoMaxNivel.text = GameManager.gameManager.GetConocimientoMaximoNivel().ToString();
 
 
-        }
+        // Habilita botón
+        botonContinua.SetActive(true);
     }
 
+    // Gestiona la actualización del PanelResumen cuando el nivel se repite
     private void ActualizaPanelResumenNivelRepiteNivel()
     {
-        if (repiteNivel)
-        {
-            panelResumenNivel.SetActive(true);
-            mensajeNivel.gameObject.SetActive(true);
-            // Cambiar el texto del mensaje
-            mensajeNivel.text = "Tendrás que repetir el nivel";
-            textConocimientoObtenido.gameObject.SetActive(false);
-            conocimientoObtenido.gameObject.SetActive(false);
-            textConocimientoMaxNivel.gameObject.SetActive(false);
-            conocimientoMaxNivel.gameObject.SetActive(false);
-
-            boton.SetActive(true);
+        // Actualiza paneles
+        panelResumenNivel.SetActive(true);
+        mensajeNivel.gameObject.SetActive(true);
 
 
+        // Cambiar el texto del mensaje
+        mensajeNivel.text = "Tendrás que repetir el nivel";
 
-        }
+        // Actualiza campos de texto
+        textConocimientoObtenido.gameObject.SetActive(false);
+        conocimientoObtenido.gameObject.SetActive(false);
+        textConocimientoMaxNivel.gameObject.SetActive(false);
+        conocimientoMaxNivel.gameObject.SetActive(false);
+
+
+
+        // Habilita botón
+        botonContinua.SetActive(true);
+
     }
 
-    public void BotonInicioReino()
+    // Gestiona boton BotonContinua
+    public void BotonContinua()
     {
+       
         SceneManager.LoadScene(0);
-        
+
     }
 
 }

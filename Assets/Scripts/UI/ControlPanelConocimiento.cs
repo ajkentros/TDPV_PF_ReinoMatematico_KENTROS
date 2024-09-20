@@ -6,8 +6,9 @@ using UnityEngine.UI;
 
 public class ControlPanelConocimiento : MonoBehaviour
 {
-    [SerializeField] private Slider sliderConocimiento;         // Que mide el conocimiento
-    [SerializeField] private TextMeshProUGUI textConocimiento;  // Muestra conocimiento logrado en cada desafío
+    [SerializeField] private Slider sliderConocimiento;             // Que mide el conocimiento
+    [SerializeField] private TextMeshProUGUI textConocimiento;      // Muestra conocimiento logrado en cada desafío
+    [SerializeField] private TextMeshProUGUI conocimientoNivel;     // Muestra conocimiento logrado total
 
     private void OnEnable()
     {
@@ -37,10 +38,26 @@ public class ControlPanelConocimiento : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    private void Update()
+    private void MuestraConocimiento(int conocimientoActual)
     {
+        //Debug.Log("MmuestraConcimiento()");
+
         ActualizaSliderConocimiento();
+        ActualizaConocimientoTotal();
+
+        // Muestra el conocimiento actualizado
+        textConocimiento.text = conocimientoActual >= 0 ? "+" + conocimientoActual : conocimientoActual.ToString();
+
+        // Inicia la corrutina para borrar el texto después de 2 segundos
+        StartCoroutine(BorraTextoConocimiento());
+    }
+
+    private IEnumerator BorraTextoConocimiento()
+    {
+        // Espera 2 segundos
+        yield return new WaitForSeconds(3);
+        // Borra el texto
+        textConocimiento.text = "";
     }
 
     private void ActualizaSliderConocimiento()
@@ -84,23 +101,20 @@ public class ControlPanelConocimiento : MonoBehaviour
         }
     }
 
-    private void MuestraConocimiento(int conocimientoActual)
+    private void ActualizaConocimientoTotal()
     {
-        //Debug.Log("MmuestraConcimiento()");
+        // Asigna el valor del nivel jugado
+        int nivel = GameManager.gameManager.GetNivel();
+        
+        // Usa el nivel como índice, restando 1 porque los arrays empiezan en 0, pero asegurando que no es negativo
+        int indice = Mathf.Max(nivel - 1, 0);
 
-        // Muestra el conocimiento actualizado
-        textConocimiento.text = conocimientoActual >= 0 ? "+" + conocimientoActual : conocimientoActual.ToString();
+        // Asigna a conocimiento el valor del conocimeinto total del nivel
+        int conocimiento = GameManager.gameManager.GetconocimientoTotalNivel(indice);
 
-        // Inicia la corrutina para borrar el texto después de 2 segundos
-        StartCoroutine(BorraTextoConocimiento());
+        conocimientoNivel.text = conocimiento.ToString();
     }
 
-    private IEnumerator BorraTextoConocimiento()
-    {
-        // Espera 2 segundos
-        yield return new WaitForSeconds(2);
-        // Borra el texto
-        textConocimiento.text = "";
-    }
+   
 }
 

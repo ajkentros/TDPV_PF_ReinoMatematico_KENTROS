@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,6 +15,9 @@ public class ControlPanelBotones : MonoBehaviour
 
     public void BotonMenu()
     {
+        AudioManager.audioManager.PlayMusicaFondo(0);
+        AudioManager.audioManager.StopSonidos();
+
         // Cargar la escena 0 (MenuInicio)
         SceneManager.LoadScene(0, LoadSceneMode.Single);
 
