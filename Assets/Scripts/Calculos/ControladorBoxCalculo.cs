@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine.UI;
 
+
 public class ControladorBoxCalculo : MonoBehaviour
 {
     [Header("Paneles")]
@@ -149,7 +150,7 @@ public class ControladorBoxCalculo : MonoBehaviour
 
                     if (panelCalculo != null) panelCalculo.SetActive(true);
                     if (panelOpciones != null) panelOpciones.SetActive(true);
-                    if (mensaje != null) mensaje.text = "arrastra el número que falta";
+                    if (mensaje != null) mensaje.text = "ARRASTRA EL NÚMERO FALTANTE";
                 }
             }
             else
@@ -165,7 +166,7 @@ public class ControladorBoxCalculo : MonoBehaviour
     {
         if (hayColisionConBoxCalculo)
         {
-            mensaje.text = "Tiempo agotado - Perdiste";
+            mensaje.text = "TIEMPO AGOTADO - PERDISTE";
             GameManager.gameManager.SetConocimiento(conocimientoCalculoIncorrecto);
             StartCoroutine(DesactivarPanelesYLimpiar());
         }
@@ -223,12 +224,12 @@ public class ControladorBoxCalculo : MonoBehaviour
     {
         if (imagenSoltada == resultadoEsperado)
         {
-            if (mensaje != null) mensaje.text = "Correcto";
+            if (mensaje != null) mensaje.text = "<color =#33E339> CORRECTO </color>";
             GameManager.gameManager.SetConocimiento(conocimientoCalculoCorrecto);
         }
         else
         {
-            if (mensaje != null) mensaje.text = "Perdiste";
+            if (mensaje != null) mensaje.text = "<color =#B3101D> INCORRECTO </color>";
             GameManager.gameManager.SetConocimiento(conocimientoCalculoIncorrecto);
         }
 
@@ -257,7 +258,7 @@ public class ControladorBoxCalculo : MonoBehaviour
 
     private IEnumerator DesactivarPanelesYLimpiar()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(0.5f);
 
         if (panelCalculo != null) panelCalculo.SetActive(false);
         if (panelOpciones != null) panelOpciones.SetActive(false);

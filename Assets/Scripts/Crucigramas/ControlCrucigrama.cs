@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -177,7 +178,7 @@ public class ControlCrucigrama : MonoBehaviour
 
                 // Activar los paneles
                 if (panelCrucigrama != null) panelCrucigrama.SetActive(true);
-                if (mensaje != null) mensaje.text = "Completa el crucigrama";
+                if (mensaje != null) mensaje.text = "COMPLETA EL CRUCIGRAMA";
                 mensaje.gameObject.SetActive(true);
 
                 // Desactiva el movimiento del player
@@ -204,7 +205,7 @@ public class ControlCrucigrama : MonoBehaviour
     {
         if (hayColisionConBoxCrucigrama)
         {
-            mensaje.text = "Tiempo agotado - Perdiste";
+            mensaje.text = "TIEMPO AGOTADO - PERDISTE";
 
             // Decrementa el conocimiento en 1
             GameManager.gameManager.SetConocimiento(conocimientoCalculoIncorrecto);
@@ -356,7 +357,7 @@ public class ControlCrucigrama : MonoBehaviour
 
         if (allCorrect)
         {
-            mensaje.text = "¡Todas las respuestas son correctas!";
+            mensaje.text = "<color=#33E339>¡TODAS LAS RESPUESTAS CORRECTAS!</color>";
             foreach (TMP_InputField inputField in inputFields)
             {
                 inputField.image.color = Color.green;
@@ -378,7 +379,8 @@ public class ControlCrucigrama : MonoBehaviour
 
             if (intentosRestantes > 0)
             {
-                mensaje.text = "Incorrecto. Te quedan " + intentosRestantes + " intentos.";
+                mensaje.text = "<color=#B3101D>INCORRECTO. TE QUEDAN " + intentosRestantes + " INTENTOS.</color>";
+
 
                 foreach (TMP_InputField inputField in inputFields)
                 {
@@ -402,7 +404,7 @@ public class ControlCrucigrama : MonoBehaviour
             }
             else
             {
-                mensaje.text = "Fallaste. No te quedan más intentos.";
+                mensaje.text = "<color=#33E339>INCORRECTO</color>";
 
                 temporizador.DetenerTemporizador();
 

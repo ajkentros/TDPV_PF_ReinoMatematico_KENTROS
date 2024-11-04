@@ -95,7 +95,8 @@ public class ControlPanelResumenNivel : MonoBehaviour
     // Gestiona boton BotonContinua
     public void BotonContinua()
     {
-       
+        
+        
         SceneManager.LoadScene(0);
 
     }

@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Tilemaps;
+using System.Drawing;
 
 
 public class ControladorMatematico : MonoBehaviour
@@ -67,7 +68,7 @@ public class ControladorMatematico : MonoBehaviour
     {
         // Define la variable nivel con el nivel actual del juego
         int nivelActual = GameManager.gameManager.GetNivel(); //Debug.Log("Controlador matemático nivel actual = " + nivelActual);
-
+        //nivelActual = nivelActual +  12;
         // Calcula el índice de matemáticos ocultos
         int indice = nivelActual - 1;
 
@@ -127,15 +128,30 @@ public class ControladorMatematico : MonoBehaviour
 
             // Completa el apellido con la letra descubierta (desordenada)
             apellidoMatematico.text += letrasDesordenadas[indiceLetraActual];
+            
+            // Calcula cuantas letras quedan por descubrir
+            int letrasPorDescubrir = letrasDesordenadas.Count - (indiceLetraActual + 1);
 
             // activa el mensaje
             mensaje.gameObject.SetActive(true);
 
-            // Calcula cuantas letras quedan por descubrir
-            int letrasPorDescubrir = letrasDesordenadas.Count - (indiceLetraActual + 1);
+            if (letrasPorDescubrir > 1)
+            {
+                // Emite el mensaje 
+                mensaje.text = $"DESCUBIRSTE LA <color=#EEEA00>{letrasDesordenadas[indiceLetraActual]}</color>. QUEDAN <color=#EEEA00>{letrasPorDescubrir}</color>";
 
-            // Emite el mensaje 
-            mensaje.text = $"Descubriste la letra {letrasDesordenadas[indiceLetraActual]}. Quedan {letrasPorDescubrir} por descubrir.";
+            }else if(letrasPorDescubrir == 1)
+            {
+                // Emite el mensaje 
+                mensaje.text = $"DESCUBIRSTE LA <color=#EEEA00>{letrasDesordenadas[indiceLetraActual]}</color>. QUEDA <color=#EEEA00>{letrasPorDescubrir}</color>";
+            }
+            else
+            {
+                // Emite el mensaje 
+                mensaje.text = $"DESCUBIRSTE LA {letrasDesordenadas[indiceLetraActual]}. <color=#EEEA00>NO QUEDAN LETRAS </color>";
+            }
+
+            
 
             // Incremenata el índice
             indiceLetraActual++;
@@ -160,7 +176,7 @@ public class ControladorMatematico : MonoBehaviour
         // Muestra mensaje para ordenar letras después de 1 segundos
         yield return new WaitForSeconds(1f);
         mensaje.text = "";
-        mensaje.text = "Ordena las letras y descubre al matemático oculto";
+        mensaje.text = "ORDENA LAS LETRAS DEL MATEMÁTICO OCULTO";
 
         // Muestra descripción después de otros 3 segundos
         yield return new WaitForSeconds(3f);
@@ -199,23 +215,25 @@ public class ControladorMatematico : MonoBehaviour
         if (textoIngresado.Equals(nombreMatematico, StringComparison.OrdinalIgnoreCase))
         {
             // Emite mensaje
-            mensaje.text = "Descubriste al matemático oculto: " + nombreMatematico;
+            mensaje.text = $"DESCUBRISTE A <color=#EEEA00>{nombreMatematico}</color>";
 
             // Desactiva el Tilemap de Salida
             if (tilemapSalida != null)
             {
-                tilemapSalida.gameObject.SetActive(false);
+                tilemapSalida.gameObject.SetActive(false); //Debug.Log("salida liberada");
                 StartCoroutine(SalidaLiberada());
             }
 
-            // Habilita el movimiento del player
-            playerControl.SetMovimientoPlayer(true);
+            
 
             // Llama a la corrutina para resetear el matemático oculto para el próximo nivel
             StartCoroutine(ResetControlMatematico());
 
             // Llama al método en GameManager que avisa que se descubrió al matemático oculto
             GameManager.gameManager.SetMatematicoDescubierto(true);
+
+            // Habilita el movimiento del player
+            playerControl.SetMovimientoPlayer(true);
         }
         else
         {
@@ -229,7 +247,7 @@ public class ControladorMatematico : MonoBehaviour
             if (intentosRestantes > 0)
             {
                 // Emite un mensaje
-                mensaje.text = "Incorrecto. Te quedan " + intentosRestantes + " intentos.";
+                mensaje.text = "INCORRECTO. TE QUEDAN " + intentosRestantes + " INTENTOS.";
 
                 // Llama a la corrutina para limpiar el texto input
                 StartCoroutine(LimpiarInputField());
@@ -237,7 +255,7 @@ public class ControladorMatematico : MonoBehaviour
             else
             {
                 // Si la cantidad de intentos = 0 => emite mensaje
-                mensaje.text = "Fallaste. No te quedan más intentos.";
+                mensaje.text = "FALLASTE. NO TE QUEDAN MÁS INTENTOS.";
 
                 // Desactiva el texto input
                 inputApellido.interactable = false;
@@ -268,7 +286,7 @@ public class ControladorMatematico : MonoBehaviour
         yield return new WaitForSeconds(2);
 
         // Cambiar el mensaje inicial
-        mensaje.text = "Busca más letras";
+        //mensaje.text = "Busca más letras";
 
         // Esperar 3 segundos
         yield return new WaitForSeconds(2);
@@ -316,9 +334,9 @@ public class ControladorMatematico : MonoBehaviour
     private IEnumerator SalidaLiberada()
     {
         // Espera 3 segundos
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(3);
         
         // Cambiar el mensaje inicial
-        mensaje.text = "Salida liberada del laberinto";
+        mensaje.text = "SALIDA LIBERADA DEL LABERINTO";
     }
 }

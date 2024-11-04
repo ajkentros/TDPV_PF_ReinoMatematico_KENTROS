@@ -38,15 +38,15 @@ public class ControlPanelConocimiento : MonoBehaviour
 
     }
 
-    private void MuestraConocimiento(int conocimientoActual)
+    private void MuestraConocimiento(int _conocimiento)
     {
-        //Debug.Log("MmuestraConcimiento()");
+        //Debug.Log("_conocimiento"+ _conocimiento);
 
         ActualizaSliderConocimiento();
         ActualizaConocimientoTotal();
 
         // Muestra el conocimiento actualizado
-        textConocimiento.text = conocimientoActual >= 0 ? "+" + conocimientoActual : conocimientoActual.ToString();
+        textConocimiento.text = _conocimiento >= 0 ? "+" + _conocimiento : _conocimiento.ToString();
 
         // Inicia la corrutina para borrar el texto después de 2 segundos
         StartCoroutine(BorraTextoConocimiento());
@@ -112,7 +112,7 @@ public class ControlPanelConocimiento : MonoBehaviour
         // Asigna a conocimiento el valor del conocimeinto total del nivel
         int conocimiento = GameManager.gameManager.GetconocimientoTotalNivel(indice);
 
-        conocimientoNivel.text = conocimiento.ToString();
+        conocimientoNivel.text = conocimiento.ToString(); 
     }
 
    

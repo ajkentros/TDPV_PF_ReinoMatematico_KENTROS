@@ -7,6 +7,10 @@ TagManager:
   - Calculo
   - DropZone
   - Obstaculo
+  - SliderMusica
+  - SliderSonido
+  - MuteMusica
+  - MuteSonido
   layers:
   - Default
   - TransparentFX

@@ -159,7 +159,7 @@ public class ControlIgnorancia : MonoBehaviour
     {
         if (distanciaAlPlayer <= (distanciaMinima + 1) && distanciaAlPlayer > distanciaMinima)
         {
-            mensaje.text = "Ignorancia está cerca, si te toca, pierdes vida";
+            mensaje.text = "IGNORANCIA ESTÁ CERCA, SI TE ALCANZA, PIERDES VIDA";
         }
     }
 
@@ -175,7 +175,7 @@ public class ControlIgnorancia : MonoBehaviour
 
         haDetectadoAlPlayer = true;
 
-        mensaje.text = "Ignorancia te detecto, clic en la opción correcta y resuelve los cálculos";
+        mensaje.text = "IGNORANCIA TE DETECTÓ, RESUELVE LOS CÁLCULOS";
 
         // Activa la animación de ignorancia
         estaVolando = true;
@@ -225,10 +225,6 @@ public class ControlIgnorancia : MonoBehaviour
         animator.SetBool("Volando", false);
     }
            
-       
-
-  
-
     private void VerificaOpcionElegida()
     {
         // Asigna métodos de clic a los botones de las opciones
@@ -307,7 +303,7 @@ public class ControlIgnorancia : MonoBehaviour
         
         if (imagenSeleccionada == resultadoEsperado)
         {
-            mensaje.text = "Muy bien, Resolviste el desafío";
+            mensaje.text = "MUY BIEN, DESAFÑIO RESUELTO";
             vidaIgnorancia --; //Debug.Log(vidaIgnorancia);
 
             // Actualiza el slider después de reducir la vida
@@ -319,7 +315,7 @@ public class ControlIgnorancia : MonoBehaviour
         }
         else
         {
-            mensaje.text = "Incorrecta la elección";
+            mensaje.text = "INCORRECTA ELECCIÓN";
 
             StartCoroutine(DesactivaPanelesYMuestraNuevoCalculo());
         }
@@ -332,9 +328,24 @@ public class ControlIgnorancia : MonoBehaviour
         if (vidaIgnorancia <= 0)
         {
             //
-            //AudioManager.audioManager.StopSonido(2);
+            // Muestra mensaje de eliminación
+            mensaje.text = "ELIMINSATE A IGNORANCIA Y GANASTE CONOCIMIENTO";
+            mensaje.gameObject.SetActive(true);
+
+            // Activa sonidos
+            AudioManager.audioManager.SetLoopSonidos(1, false);
+            AudioManager.audioManager.PlaySonidos(1);
+            AudioManager.audioManager.PlayMusicaFondo(1);
+
             
+
             StartCoroutine(IgnoranciaEliminada());
+
+            // Aumenta el conocimiento del player
+            GameManager.gameManager.SetConocimiento(3);
+
+            // Permite que el Player se mueva nuevamente
+            playerControl.SetMovimientoPlayer(true);
         }
         else
         {
@@ -344,19 +355,8 @@ public class ControlIgnorancia : MonoBehaviour
 
     private IEnumerator IgnoranciaEliminada()
     {
-
-        // Muestra mensaje de eliminación
-        mensaje.text = "eliminaste a ignorancia y ganaste conocimiento";
-        mensaje.gameObject.SetActive(true);
-
-        // Activa sonidos
-        AudioManager.audioManager.SetLoopSonidos(1, false);
-        AudioManager.audioManager.PlaySonidos(1);
-        AudioManager.audioManager.PlayMusicaFondo(1);
-
         // Espera 2 segundos
-        yield return new WaitForSeconds(2f);
-
+        yield return new WaitForSeconds(1f);
         
         // Limpia paneles y sprites
         LimpiaPaneles();
@@ -365,12 +365,10 @@ public class ControlIgnorancia : MonoBehaviour
         // Destruye Ignorancia
         Destroy(gameObject);
 
-        // Aumenta el conocimiento del player
-        GameManager.gameManager.SetConocimiento(3);
 
-        // Permite que el Player se mueva nuevamente
-        playerControl.SetMovimientoPlayer(true);
     }
+
+    
 
     private IEnumerator DesactivaPanelesYMuestraNuevoCalculo()
     {
@@ -435,7 +433,7 @@ public class ControlIgnorancia : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            Debug.Log("colisionó con el player");
+            //Debug.Log("colisionó con el player");
             // Reduce la vida del player
             playerControl.SetMovimientoPlayer(true);
             

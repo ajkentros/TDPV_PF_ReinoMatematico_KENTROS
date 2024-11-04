@@ -175,7 +175,7 @@ public class ControladorCalculos : MonoBehaviour
                 // Activar los paneles
                 if (panelCalculo != null) panelCalculo.SetActive(true);
                 if (panelOpciones != null) panelOpciones.SetActive(true);
-                if (mensaje != null) mensaje.text = "arrastra el número que falta";
+                if (mensaje != null) mensaje.text = "ARRASTRA EL NÚMERO FALTANTE";
                 //mensaje.gameObject.SetActive(true);
 
                 
@@ -192,7 +192,7 @@ public class ControladorCalculos : MonoBehaviour
     {
         if(hayColisionConBoxCalculo)
         {
-            mensaje.text = "Tiempo agotado - Perdiste";
+            mensaje.text = "TIEMPO AGOTADO - PERDISTE";
 
             // Reduce el conocimiento en 1
             GameManager.gameManager.SetConocimiento(conocimientoCalculoIncorrecto);
@@ -261,7 +261,7 @@ public class ControladorCalculos : MonoBehaviour
         //Debug.Log($"imagen soltada: {imagenSoltada.name}");
         if (imagenSoltada == resultadoEsperado)
         {
-            if (mensaje != null) mensaje.text = "Correcto";
+            if (mensaje != null) mensaje.text = "<color=#33E339>CORRECTO</color>";
 
             // Aumenta el conocimiento en 1
             GameManager.gameManager.SetConocimiento(conocimientoCalculoCorrecto);
@@ -269,18 +269,20 @@ public class ControladorCalculos : MonoBehaviour
         }
         else
         {
-            if (mensaje != null) mensaje.text = "Perdiste";
+            if (mensaje != null) mensaje.text = "<color=#B3101D>INCORRECTO</color>";
 
             // Reduce el conocimiento en 1
             GameManager.gameManager.SetConocimiento(conocimientoCalculoIncorrecto);
         }
         temporizador.DetenerTemporizador();
-        // Desuscribirse del evento OnDrop para evitar múltiples suscripciones
-        DesuscribirEventos();
+        
 
         // Desactivar los paneles y limpiar las imágenes después de 5 segundos
         StartCoroutine(DesactivarPanelesYLimpiar());
-        
+
+        // Desuscribirse del evento OnDrop para evitar múltiples suscripciones
+        DesuscribirEventos();
+
     }
 
     private void DesuscribirEventos()

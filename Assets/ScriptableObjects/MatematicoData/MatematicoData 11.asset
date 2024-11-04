@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36cb2ca47ecbf7f449b3e08404e41dd6, type: 3}
   m_Name: MatematicoData 11
   m_EditorClassIdentifier: 
-  apellidoMatematico: 
-  descripcionMatematico: 
+  apellidoMatematico: VAUGHAN
+  descripcionMatematico: "Matem\xE1tica afroamericana en la NASA."

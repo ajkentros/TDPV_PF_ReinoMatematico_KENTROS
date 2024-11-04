@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36cb2ca47ecbf7f449b3e08404e41dd6, type: 3}
   m_Name: MatematicoData 9
   m_EditorClassIdentifier: 
-  apellidoMatematico: 
-  descripcionMatematico: 
+  apellidoMatematico: RIEMANN
+  descripcionMatematico: "Conocido por su geometr\xEDa no euclidiana y c\xE1lculo
+    de integrales."

@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.Rendering.DebugUI;
 
 
 public class GameManager : MonoBehaviour
@@ -28,18 +30,18 @@ public class GameManager : MonoBehaviour
     
     private Reloj cronometro;       // Referencia a la clase Reloj para el cronómetro del juego
 
-    private int conocimientoNivel;               // Cuenta el conocimiento que se logra por cada desafío
+    private int conocimientoNivel;          // Cuenta el conocimiento que se logra por cada Nivel
     private int conocimientoTotal;          // Cuenta el conocimiento total logrado en el juego
     private int[] conocimientoTotalNivel;   // Guarda el conocimiento logrado en cada nivel
     
     private int conocimientoSumas;          // Guarda las sumatorias de conocimiento en los desafíos de sumas
-    private int conocimientoRestas;          // Guarda las sumatorias de conocimiento en los desafíos de restas
-    private int conocimientoMultiplicacion;  // Guarda las sumatorias de conocimiento en los desafíos de multiplicaciones
-    private int conocimientoDivision;        // Guarda las sumatorias de conocimiento en los desafíos de divisiones
+    private int conocimientoRestas;         // Guarda las sumatorias de conocimiento en los desafíos de restas
+    private int conocimientoMultiplicaciones; // Guarda las sumatorias de conocimiento en los desafíos de multiplicaciones
+    private int conocimientoDivisiones;       // Guarda las sumatorias de conocimiento en los desafíos de divisiones
 
 
-    private int nivel;                  // Inicio escena 1 = nivel 0
-    private readonly int totalNiveles = 16;          // Referencia a 16 niveles (+ de 0 a 3; - de 4 a 7; x de 8 a 11 y / de 12 a 15)
+    private int nivel;                      // Inicio escena 1 = nivel 0
+    private int totalNiveles;               // Referencia a 16 niveles (+ de 0 a 3; - de 4 a 7; x de 8 a 11 y / de 12 a 15)
     
     private int vidasInicio = 3;            // Referencia variable vidas del jugador// nivel = 0 es la escena 1 
     private readonly int maxVidas = 5;      // Máximo número de vidas
@@ -51,7 +53,7 @@ public class GameManager : MonoBehaviour
     private bool matematicoDescubierto;     // Bandera que avisa si se descubrió el matemático
     private bool juegoPausado;              // Bandera que avisa si el juego se pausó
 
-
+    [SerializeField] private PersistenciaManager persistenciaManager;    // Rreferencia al PersistenciaManager
 
     private void Awake()
     {
@@ -65,7 +67,55 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
 
+        // Cuenta la cantidad de escenas - 1 para saber los niveles del juego
+        totalNiveles = SceneManager.sceneCountInBuildSettings - 1;  Debug.Log("totalNiveles =" + totalNiveles);
+
+        // Inicializa el arreglo conocimientoTotalNiveles con la dimensión adecuada
         conocimientoTotalNivel = new int[totalNiveles];
+
+        // Cargar datos de persistencia al iniciar el juego
+        CargarDatosPersistenciaManager();
+    }
+
+    public void CargarDatosPersistenciaManager()
+    {
+        // Persistencia
+        nivel = PersistenciaManager.Instance.GetInt(PersistenciaManager.KeyNivel, 0);
+        Debug.Log("GameManager-CargaDatosPersistenciaManager " + "nivel= " + nivel);
+
+        vidasInicio = PersistenciaManager.Instance.GetInt(PersistenciaManager.KeyVidasJugador, 3);
+        
+        conocimientoNivel = PersistenciaManager.Instance.GetInt(PersistenciaManager.KeyConocimientoNivel, 0);
+        
+        conocimientoTotal = PersistenciaManager.Instance.GetInt(PersistenciaManager.KeyConocimientoTotal, 0);
+        Debug.Log("GameManager-CargaDatosPersistenciaManager " + "conocimientoTotal = " + conocimientoTotal);
+
+        //int indice = Mathf.Max(nivel - 1, 0);
+        for (int i = 0; i < nivel; i++)
+        {
+            conocimientoTotalNivel[i] = PersistenciaManager.Instance.LoadConocimientoTotalNivel(i);
+
+        }
+
+        conocimientoSumas = PersistenciaManager.Instance.GetInt(PersistenciaManager.KeyConocimientoSumas, 0);
+        Debug.Log("GameManager-CargaDatosPersistenciaManager " + "+ = " + conocimientoSumas);
+
+        conocimientoRestas = PersistenciaManager.Instance.GetInt(PersistenciaManager.KeyConocimientoRestas, 0);
+        Debug.Log("GameManager-CargaDatosPersistenciaManager " + "- = " + conocimientoRestas);
+        
+        conocimientoMultiplicaciones = PersistenciaManager.Instance.GetInt(PersistenciaManager.KeyConocimientoMultiplicaciones, 0);
+        Debug.Log("GameManager-CargaDatosPersistenciaManager " + "* = " + conocimientoMultiplicaciones);
+        
+        conocimientoDivisiones = PersistenciaManager.Instance.GetInt(PersistenciaManager.KeyConocimientoDivisiones, 0);
+        Debug.Log("GameManager-CargaDatosPersistenciaManager " + "/ = " + conocimientoDivisiones);
+
+        terminaJuego = PersistenciaManager.Instance.GetBool(PersistenciaManager.KeyTerminaJuego, false);    
+        //Debug.Log("GameManager-CargarDatosPersistenciaManager() " + "terminaJuego= " + terminaJuego);
+        
+        juegaNivel = PersistenciaManager.Instance.GetBool(PersistenciaManager.KeyJuegaNivel, false);
+        repiteNivel = PersistenciaManager.Instance.GetBool(PersistenciaManager.KeyRepiteNivel, false);
+        terminaNivel = PersistenciaManager.Instance.GetBool(PersistenciaManager.KeyTerminaNivel, false);
+
     }
 
     private void Start()
@@ -73,6 +123,25 @@ public class GameManager : MonoBehaviour
         IniciaStart();
 
     }
+
+    // Gestiona el inicio de las variables
+    private void IniciaStart()
+    {
+        
+       
+        if(nivel == 0)
+        {
+            conocimientoTotal = 0;
+        }
+        
+        matematicoDescubierto = false;
+        repiteNivel = false;
+        terminaNivel = false;
+        //terminaJuego = false;
+        AudioManager.audioManager.PlayMusicaFondo(0);
+        AudioManager.audioManager.StopSonidos();
+    }
+
     private void Update()
     {
         // Iniciar cronómetro cuando el nivel está en juego
@@ -110,28 +179,30 @@ public class GameManager : MonoBehaviour
         // Obtiene el índice de la escena actual
         int escenaActual = SceneManager.GetActiveScene().buildIndex;
 
-        //Debug.Log("VerificaEscenas()" + escenaActual);
+        //Debug.Log("VerificaEscenas()" + "escena = "+ escenaActual + " nivel = " + nivel);
 
         // Obtiene el índice de la última escena
         int ultimaEscena = SceneManager.sceneCountInBuildSettings - 1;
 
         // Verifica si la escena actual es la última
-        if (escenaActual == ultimaEscena)
+        if (escenaActual == ultimaEscena || nivel == ultimaEscena)
         {
             terminaJuego = true;
         }
     }
 
+    // Suscribe al evento de cargar la escena
     private void OnEnable()
     {
-        SceneManager.sceneLoaded += OnSceneLoaded; // Suscribe al evento de cargar la escena
+        SceneManager.sceneLoaded += OnSceneLoaded; 
     }
 
+    // Desuscribirse del evento de carga de escenas
     private void OnDisable()
     {
         if (gameManager == this)
         {
-            SceneManager.sceneLoaded -= OnSceneLoaded; // Desuscribirse del evento de carga de escenas
+            SceneManager.sceneLoaded -= OnSceneLoaded; 
         }
     }
 
@@ -207,7 +278,7 @@ public class GameManager : MonoBehaviour
     // Gestiona el decremento de vidas del player
     public void DecrementaVidas()
     {
-        Debug.Log("vidas antes "+ vidasInicio);
+        //Debug.Log("vidas antes "+ vidasInicio);
         // Si la vida > 0 =>
         if (vidasInicio > 0)
         {
@@ -226,7 +297,7 @@ public class GameManager : MonoBehaviour
         } 
     }
 
-    // Gestiona el panel vidas
+    // Gestiona la actualización del panel vidas
     public void RegistrarControlPanelVidas(ControlPanelVidas controlPanelVidas)
     {
         //Debug.Log("RegistrarControlPanelVidas");
@@ -237,7 +308,7 @@ public class GameManager : MonoBehaviour
         //Debug.Log("RegistrarControlPanelVidas con vidas: " + vidas);
     }
 
-    // Gestiona el panel vidas
+    // Gestiona la actualización del panel vidas
     public void DesregistrarControlPanelVidas(ControlPanelVidas controlPanelVidas)
     {
         //Debug.Log("DesregistrarControlPanelVidas");
@@ -259,9 +330,17 @@ public class GameManager : MonoBehaviour
             cronometro.DetenerTemporizador();
 
             // Sumar conocimiento logrado por categoría
-            CalculaConicimientoPorDesafios(); 
+            CalculaConocimientoPorDesafios(); 
             
             Debug.Log("GameManager - NivelTerminado(): nivel = " + nivel);
+
+            // Usa el nivel como índice, restando 1 porque los arrays empiezan en 0, pero asegurando que no es negativo
+            int indice = Mathf.Max(nivel - 1, 0);
+
+            // Calcula el conocimiento total del juego = acumulado del conocimiento de cada nivel
+            conocimientoTotal += conocimientoTotalNivel[indice];
+
+            Debug.Log("conocimiento del nivel = " + conocimientoNivel + " conocimientoTotal = " + conocimientoTotal);
 
             int siguienteNivel = nivel + 1;
 
@@ -272,6 +351,8 @@ public class GameManager : MonoBehaviour
                 // Disparar el evento de juego terminado
                 OnJuegoTerminado?.Invoke();
             }
+
+            GuardarProgreso();
 
             // Disparar el evento de nivel terminado
             OnNivelTerminado?.Invoke();
@@ -298,13 +379,15 @@ public class GameManager : MonoBehaviour
         // Actualiza el valor del conocimiento de ese nivel = 0 (volver a comenzar)
         conocimientoTotalNivel[indice] = 0;
 
+        GuardarProgreso();
+
         // Disparar el evento de nivel repetido
         OnNivelRepetido?.Invoke();
 
     }
 
     // Gestiona el cálculo del conocimiento logrado
-    private void CalculaConicimientoPorDesafios()
+    private void CalculaConocimientoPorDesafios()
     {
         // Obtiene el conocimiento logrado en el nivel actual
         int indice = Mathf.Max(nivel - 1, 0);
@@ -315,18 +398,19 @@ public class GameManager : MonoBehaviour
         {
             conocimientoSumas += conocimientoNivel;
         }
-        else if (nivel >= 7 && nivel <= 8) // Niveles 5-8: Restas
+        else if (nivel >= 5 && nivel <= 8) // Niveles 5-8: Restas
         {
             conocimientoRestas += conocimientoNivel;
         }
         else if (nivel >= 9 && nivel <= 12) // Niveles 9-12: Multiplicaciones
         {
-            conocimientoMultiplicacion += conocimientoNivel;
+            conocimientoMultiplicaciones += conocimientoNivel;
         }
         else if (nivel >= 13 && nivel <= 16) // Niveles 13-16: Divisiones
         {
-            conocimientoDivision += conocimientoNivel;
+            conocimientoDivisiones += conocimientoNivel;
         }
+
     }
 
     // Set conocimiento logrado en el nivel que se juega
@@ -350,15 +434,17 @@ public class GameManager : MonoBehaviour
         // Usa el nivel como índice, restando 1 porque los arrays empiezan en 0, pero asegurando que no es negativo
         int indice = Mathf.Max(nivel - 1, 0);
         
+        //Debug.Log("GameManager - SetConocimiento -> " + "conocimientoNivel = "+conocimientoNivel + " conocimientoTotalNivel[" + indice + "] = " + conocimientoTotalNivel[indice]);
+        
         // Calcula en conocimiento total del nivel = conocimiento logrado en ese nivel
         conocimientoTotalNivel[indice] = conocimientoNivel;
+        
 
-        // Calcula el conocimiento total del juego = acumulado del conocimiento de cada nivel
-        conocimientoTotal += conocimientoTotalNivel[indice];
-
-        // Invoca el evento OnConocimientoActualizado para actualizar la pantalla con el valor del conocimiento logrado cuando gana un desafío
+        // Incova al evento que actualiza el conociento logrado
         OnConocimientoActualizado?.Invoke(_conocimiento);
-        Debug.Log("conocimiento del nivel = " + conocimientoNivel);
+
+        GuardarProgreso();
+        
     }
 
     // Get conocimiento logrado en el nivel que se juega
@@ -371,7 +457,7 @@ public class GameManager : MonoBehaviour
     public int GetconocimientoTotalNivel(int indice)
     {
         
-        Debug.Log("Game Manager - nivel = " + nivel + "GetconocimientoTotalNivel[" + indice + "] = "+ conocimientoTotalNivel[indice]);
+        //Debug.Log("Game Manager - nivel = " + nivel + "GetconocimientoTotalNivel[" + indice + "] = "+ conocimientoTotalNivel[indice]);
         return conocimientoTotalNivel[indice];
     }
 
@@ -385,6 +471,7 @@ public class GameManager : MonoBehaviour
     // Get conocimiento total logrado el juego
     public int GetConocimientoTotal()
     {
+        Debug.Log("conocimiento Final = " + conocimientoTotal);
         return conocimientoTotal;
 
     }
@@ -402,25 +489,29 @@ public class GameManager : MonoBehaviour
     // Get conocimientos de las sumas
     public int GetConocimientoSumas()
     {
+        Debug.Log("conocimiento de + = " + conocimientoSumas);
         return conocimientoSumas;
     }
 
     // Get conocimientos de las restas
     public int GetConocimientoRestas()
     {
+        Debug.Log("conocimiento de - = " + conocimientoRestas);
         return conocimientoRestas;
     }
 
     // Get conocimientos de las multiplicaciones
     public int GetConocimientoMultiplicaciones()
     {
-        return conocimientoMultiplicacion;
+        Debug.Log("conocimiento de * = " + conocimientoMultiplicaciones);
+        return conocimientoMultiplicaciones;
     }
 
     // Get conocimientos de las divisiones
     public int GetConocimientoDivisiones()
     {
-        return conocimientoDivision;
+        Debug.Log("conocimiento de / = " + conocimientoDivisiones);
+        return conocimientoDivisiones;
     }
 
     // Set cambia la bandera de matemático descubierto
@@ -508,23 +599,10 @@ public class GameManager : MonoBehaviour
     }
 
     // Gestiona el reinicio del juego
-    public void ReiniciaJuego()
+    public void VolverMenuInicio()
     {
         IniciaStart();
         
-    }
-
-    // Gestiona el inicio de las variables
-    private void IniciaStart()
-    {
-        
-        conocimientoTotal = 0;
-        matematicoDescubierto = false;
-        repiteNivel = false;
-        terminaNivel = false;
-        terminaJuego = false;
-        AudioManager.audioManager.PlayMusicaFondo(0);
-        AudioManager.audioManager.StopSonidos();
     }
 
     // Gestiona el reinicio del juego
@@ -546,7 +624,24 @@ public class GameManager : MonoBehaviour
         AudioManager.audioManager.StopSonidos();
     }
 
-    
+    public void ReiniciaJuego()
+    {
+        if (terminaJuego)
+        {
+            Debug.Log("ReiniciaJuego");
+            nivel = 0;
+            conocimientoTotal = 0;
+            matematicoDescubierto = false;
+            repiteNivel = false;
+            terminaNivel = false;
+            terminaJuego = false;
+            AudioManager.audioManager.PlayMusicaFondo(0);
+            AudioManager.audioManager.StopSonidos();
+
+        }
+
+        
+    }
 
     // Get la bandera para avisar que se repite un nivel
     public bool GetRepiteNivel()
@@ -572,13 +667,60 @@ public class GameManager : MonoBehaviour
     // Get la bandera para avisar que termina el juego
     public bool GetTerminaJuego()
     {
+        //Debug.Log("GameManager-GetTerminaJuego() " + "terminaJuego= " + terminaJuego);
         return terminaJuego;
     }
 
-    // Set de la bandera termina el jeugo
+    // Set de la bandera termina el juego
     public void SetTerminaJuego(bool _terminaJuego)
     {
         terminaJuego = _terminaJuego;
     }
 
+    // Guarda el progreso del juego
+    public void GuardarProgreso()
+    {
+        // VidasJugador
+        PersistenciaManager.Instance.SetInt(PersistenciaManager.KeyVidasJugador, vidasInicio);
+
+        // Nivel
+        PersistenciaManager.Instance.SetInt(PersistenciaManager.KeyNivel, nivel);
+        
+        // ConocimientoNivel
+        PersistenciaManager.Instance.SetInt(PersistenciaManager.KeyConocimientoNivel, conocimientoNivel);
+        
+        // ConocimientoTotal
+        PersistenciaManager.Instance.SetInt(PersistenciaManager.KeyConocimientoTotal, conocimientoTotal);
+
+        // ConocimientoTotalNivel
+        int indice = Mathf.Max(nivel - 1, 0);
+        PersistenciaManager.Instance.SaveConocimientoTotalNivel(indice, conocimientoTotalNivel[indice]);
+
+        // ConocimientoSumas
+        PersistenciaManager.Instance.SetInt(PersistenciaManager.KeyConocimientoSumas, conocimientoSumas);
+        
+        // ConocimientoRestas
+        PersistenciaManager.Instance.SetInt(PersistenciaManager.KeyConocimientoRestas, conocimientoRestas);
+        
+        // ConocimientoMultiplicaciones
+        PersistenciaManager.Instance.SetInt(PersistenciaManager.KeyConocimientoMultiplicaciones, conocimientoMultiplicaciones);
+
+        // ConocimientoDivisiones
+        PersistenciaManager.Instance.SetInt(PersistenciaManager.KeyConocimientoDivisiones, conocimientoDivisiones);
+
+        // terminaJuego
+        PersistenciaManager.Instance.SetBool(PersistenciaManager.KeyTerminaJuego, terminaJuego);
+
+        // juegaNivel
+        PersistenciaManager.Instance.SetBool(PersistenciaManager.KeyJuegaNivel, juegaNivel);
+
+        // repiteNivel
+        PersistenciaManager.Instance.SetBool(PersistenciaManager.KeyRepiteNivel, repiteNivel);
+
+        // terminaNivel
+        PersistenciaManager.Instance.SetBool(PersistenciaManager.KeyTerminaNivel, terminaNivel);
+
+        // Guarda
+        PersistenciaManager.Instance.Save();
+    }
 }

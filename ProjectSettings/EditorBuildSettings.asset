@@ -23,6 +23,39 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Reino_Nivel_5.unity
     guid: a3eb49c90b071cf4b8036734bd7d9253
+  - enabled: 1
+    path: Assets/Scenes/Reino_Nivel_6.unity
+    guid: 61598c743249c494cbca34d15505a743
+  - enabled: 1
+    path: Assets/Scenes/Reino_Nivel_7.unity
+    guid: c8c0454cebfa2cd47a60f14a2108dfc5
+  - enabled: 1
+    path: Assets/Scenes/Reino_Nivel_8.unity
+    guid: d589eea741fc6ae438f7c9b8cc876480
+  - enabled: 1
+    path: Assets/Scenes/Reino_Nivel_9.unity
+    guid: b39ca7667bbcb5243a7849bcf18c95e7
+  - enabled: 1
+    path: Assets/Scenes/Reino_Nivel_10.unity
+    guid: 9be062f9daac4564f8261da039bf8370
+  - enabled: 1
+    path: Assets/Scenes/Reino_Nivel_11.unity
+    guid: 8ad3e47d41f1ab640b11a935b90f9881
+  - enabled: 1
+    path: Assets/Scenes/Reino_Nivel_12.unity
+    guid: 8367ade507d69074ea688f0b4573424c
+  - enabled: 1
+    path: Assets/Scenes/Reino_Nivel_13.unity
+    guid: a450224e8917dc64c93e39e2b14348a7
+  - enabled: 1
+    path: Assets/Scenes/Reino_Nivel_14.unity
+    guid: be1edb67320e35a4e9545245c1107e53
+  - enabled: 1
+    path: Assets/Scenes/Reino_Nivel_15.unity
+    guid: 5f0bb387e0706734b8bee377e8f95e31
+  - enabled: 1
+    path: Assets/Scenes/Reino_Nivel_16.unity
+    guid: 88d46dafcde72774b911fdc0568e3d6d
   - enabled: 0
     path: Assets/Scenes/Scene Prueba.unity
     guid: b487d520d68624e42b12a379cea0f919

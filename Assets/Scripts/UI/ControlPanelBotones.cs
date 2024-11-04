@@ -32,10 +32,11 @@ public class ControlPanelBotones : MonoBehaviour
             Canvas canvas = FindObjectOfType<Canvas>();
             if (canvas != null)
             {
-                Transform panelReinoTransform = canvas.transform.Find("PanelReino");
+                Transform panelReinoTransform = canvas.transform.Find("PanelInicio");
                 if (panelReinoTransform != null)
                 {
-                    Debug.Log("PanelReino");
+                    
+                    Debug.Log("PanelInicio");
                     panelReinoTransform.gameObject.SetActive(true);
                 }
             }

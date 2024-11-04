@@ -11,11 +11,12 @@ public class ControlMenuInicio : MonoBehaviour
     [SerializeField] private GameObject panelInicio;                // Referencia al panel que tiene la presentación
     [SerializeField] private GameObject panelReino;
     [SerializeField] private GameObject panelFinal;
-    [SerializeField] private GameObject panelConfiguracion;         // Referencia al planel con la configuraciòn de audio y música
     [SerializeField] private GameObject panelAyuda;                 // Referencia al planel con la ayuda
+    [SerializeField] private GameObject panelConfiguracionAudio;    // Referencia al planel con la ayuda
 
     [Header("Botones")]
-    [SerializeField] private Button[] botonDesafio; // Referencias a los botones
+    [SerializeField] private Button[] botonDesafio;         // Referencias a los botones
+    [SerializeField] private Button botonIniciarReino;      // Referencia al boton Iniciar Reino
 
     [Header("Imagenes Botones")]
     [SerializeField] private Image[] imagenBotonDesafio; // Referencias a las imágenes de los botones
@@ -30,12 +31,14 @@ public class ControlMenuInicio : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textoConocimientoDivisiones;           // Referencias al texto que muestra el conocimiento total de las divisiones
     [SerializeField] private TextMeshProUGUI textoConocimientoFinal;                // Referencias al texto que muestra el conocimiento final
 
-    
-    public Sprite spriteSuma; // Sprite para el primer botón
-    public Sprite spriteResta; // Sprite para el primer botón
-    public Sprite spriteMultiplicacion; // Sprite para el primer botón
-    public Sprite spriteDivision; // Sprite para el primer botón
-    public Sprite spriteCandado; // Sprite para los botones bloqueados
+    [Header("Sprite")]
+    [SerializeField] private Sprite spriteSuma;                     // Sprite para el primer botón
+    [SerializeField] private Sprite spriteResta;                    // Sprite para el primer botón
+    [SerializeField] private Sprite spriteMultiplicacion;           // Sprite para el primer botón
+    [SerializeField] private Sprite spriteDivision;                 // Sprite para el primer botón
+    [SerializeField] private Sprite spriteCandado;                  // Sprite para los botones bloqueados
+    [SerializeField] private Sprite spriteButtonIniciarReino;  // Sprite para el botón en niveles superiores a 0
+    [SerializeField] private Sprite nuevoSpriteButtonIniciarReino;  // Sprite para el botón en niveles superiores a 0
 
     private int[] conocimientoTotalNivel;
     private int nivel;
@@ -46,43 +49,26 @@ public class ControlMenuInicio : MonoBehaviour
 
 
     private void Start()
-    {
-        
-        
+    {  
         IniciarStart();
        
-
     }
-
-  
 
     private void IniciarStart()
     {
-
-        nivel = GameManager.gameManager.GetNivel();
-        repiteNivel = GameManager.gameManager.GetRepiteNivel();
-        terminaNivel = GameManager.gameManager.GetTerminaNivel();
-        terminaJuego = GameManager.gameManager.GetTerminaJuego();
-
         int totalNiveles = GameManager.gameManager.GetTotalNiveles();
         conocimientoTotalNivel = new int[totalNiveles];
 
-        for (int i = 1; i < botonDesafio.Length; i++)
-        {
-            // Instancia los botones todos desactivados
-            botonDesafio[i].interactable = false;
-        }
-    }
-
-    private void Update()
-    {
         // Obtiene banderas del juego
         ActualizaBanderas();
-
-        if ((repiteNivel || terminaNivel) && !terminaJuego)
+        
+        if(!terminaJuego && !repiteNivel && !terminaNivel)
         {
-            MostrarPanelReino();
-            ActualizarEstadoBotones();
+            for (int i = 1; i < botonDesafio.Length; i++)
+            {
+                // Instancia los botones todos desactivados
+                botonDesafio[i].interactable = false;
+            }
         }
 
         if (terminaJuego)
@@ -90,26 +76,54 @@ public class ControlMenuInicio : MonoBehaviour
             MostrarPanelFinal();
         }
 
-    }
+        CambiarImagenButtonIniciarReino();
+        
+       }
 
-    private void ActualizaBanderas()
+    private void CambiarImagenButtonIniciarReino()
     {
-        nivel = GameManager.gameManager.GetNivel();
-        repiteNivel = GameManager.gameManager.GetRepiteNivel();
-        terminaNivel = GameManager.gameManager.GetTerminaNivel();
-        terminaJuego = GameManager.gameManager.GetTerminaJuego();
+        // Accede al componente Image del botón
+        Image imagenButtonIniciarReino = botonIniciarReino.GetComponent<Image>();
+
+        if (imagenButtonIniciarReino != null)
+        {
+            if (nivel >= 1 && nuevoSpriteButtonIniciarReino != null)  // Si el nivel es mayor o igual a 1, cambia la imagen
+            {
+                imagenButtonIniciarReino.sprite = nuevoSpriteButtonIniciarReino;
+            }
+            else if (spriteButtonIniciarReino != null)  // Si el nivel es 0, restaura la imagen original
+            {
+                imagenButtonIniciarReino.sprite = spriteButtonIniciarReino;
+            }
+        }
     }
 
-
-     
     // Gestiona el panel Reino
     private void MostrarPanelReino()
     {
         panelInicio.SetActive(false);
         panelReino.SetActive(true);
         panelFinal.SetActive(false);
-        panelConfiguracion.SetActive(false);
         panelAyuda.SetActive(false);
+        panelConfiguracionAudio.SetActive(false);
+
+        // Obtiene banderas del juego
+        ActualizaBanderas();
+
+        if (nivel >= 1)
+        {
+            ActualizarEstadoBotones();
+        }
+
+    }
+
+    //
+    private void ActualizaBanderas()
+    {
+        nivel = GameManager.gameManager.GetNivel(); // Debug.Log("ControlMenuInicio - IniciaStart " + "Nivel = " + nivel);
+        repiteNivel = GameManager.gameManager.GetRepiteNivel();
+        terminaNivel = GameManager.gameManager.GetTerminaNivel();
+        terminaJuego = GameManager.gameManager.GetTerminaJuego(); // Debug.Log("ControlMenuInicio - IniciaStart " + "terminaJuego = " + terminaJuego);
     }
 
 
@@ -123,7 +137,8 @@ public class ControlMenuInicio : MonoBehaviour
                                         spriteMultiplicacion, spriteMultiplicacion, spriteMultiplicacion, spriteMultiplicacion,
                                         spriteDivision, spriteDivision, spriteDivision, spriteDivision };
 
-        Debug.Log("ControlMenuInicio - nivel:" + nivel);
+        //Debug.Log("ControlMenuInicio - ActualizarEstadoBotones " + "nivel = " + nivel);
+        
         // Actualiza el estado de todos los botones
         for (int i = 0; i < botonDesafio.Length; i++)
         {
@@ -159,8 +174,8 @@ public class ControlMenuInicio : MonoBehaviour
         panelInicio.SetActive(false);
         panelReino.SetActive(false);
         panelFinal.SetActive(true);
-        panelConfiguracion.SetActive(false);
         panelAyuda.SetActive(false);
+        panelConfiguracionAudio.SetActive(false);
 
         ActualizarConocimientoFinal();
 
@@ -171,33 +186,53 @@ public class ControlMenuInicio : MonoBehaviour
     {
         // Obtiene los valores del GameManager y los muestra en la UI
         int conocimientoSumas = GameManager.gameManager.GetConocimientoSumas();
-        textoConocimientoSumas.text = conocimientoSumas.ToString();     Debug.Log("conocimiento de sumas = " + conocimientoSumas);
+        textoConocimientoSumas.text = conocimientoSumas.ToString();     //Debug.Log("conocimiento de + = " + conocimientoSumas);
 
         int conocimientoRestas = GameManager.gameManager.GetConocimientoRestas();
-        textoConocimientoRestas.text = conocimientoRestas.ToString();
+        textoConocimientoRestas.text = conocimientoRestas.ToString(); //Debug.Log("conocimiento de - = " + conocimientoRestas);
 
         int conocimientoMultiplicaciones = GameManager.gameManager.GetConocimientoMultiplicaciones();
-        textoConocimientoMultiplicaciones.text = conocimientoMultiplicaciones.ToString();
+        textoConocimientoMultiplicaciones.text = conocimientoMultiplicaciones.ToString(); //Debug.Log("conocimiento de * = " + conocimientoMultiplicaciones);
 
         int conocimientoDivisiones = GameManager.gameManager.GetConocimientoDivisiones();
-        textoConocimientoDivisiones.text = conocimientoDivisiones.ToString();
+        textoConocimientoDivisiones.text = conocimientoDivisiones.ToString(); //Debug.Log("conocimiento de / = " + conocimientoDivisiones);
 
         int ConocimientoFinal = GameManager.gameManager.GetConocimientoTotal();
-        textoConocimientoFinal.text = ConocimientoFinal.ToString();
+        textoConocimientoFinal.text = ConocimientoFinal.ToString(); //Debug.Log("conocimiento Final = " + ConocimientoFinal);
     }
 
     // Gestiona el botón Jugar
     public void BotonIniciaReino()
     {
-        panelInicio.SetActive(false);
-        panelReino.SetActive(true);
-        panelFinal.SetActive(false);
-        panelConfiguracion.SetActive(false);
-        panelAyuda.SetActive(false);
+        if (!terminaJuego)
+        {
+            // Habilita paneles
+            MostrarPanelReino();
+            //IniciarStart();
+        }
+        else
+        {
+            MostrarPanelFinal();
+        }
 
-        repiteNivel = false;
-        terminaNivel = false;
-       
+        
+
+    }
+
+    public void BotonReIniciaReino()
+    {
+
+        // Eliminar el valor del nivel almacenado en PlayerPrefs
+        PersistenciaManager.Instance.DeleteAll();
+        
+        PersistenciaManager.Instance.DeleteConocimientoTotalNivel(nivel);
+
+        GameManager.gameManager.CargarDatosPersistenciaManager();
+
+        GameManager.gameManager.ReiniciaJuego();
+
+        // Actualiza MenuInicio según los nuevos valores
+        IniciarStart();
     }
 
     // Gestiona el cierre de la aplicación
@@ -205,6 +240,7 @@ public class ControlMenuInicio : MonoBehaviour
     {
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
+        GameManager.gameManager.GuardarProgreso();
 #else
         Application.Quit();
 #endif
@@ -215,8 +251,8 @@ public class ControlMenuInicio : MonoBehaviour
         panelInicio.SetActive(false);
         panelReino.SetActive(true);
         panelFinal.SetActive(false);
-        panelConfiguracion.SetActive(false);
         panelAyuda.SetActive(false);
+        panelConfiguracionAudio.SetActive(false);
     }
 
     public void BotonVolverMenuInicio()
@@ -224,8 +260,8 @@ public class ControlMenuInicio : MonoBehaviour
         panelInicio.SetActive(true);
         panelReino.SetActive(false);
         panelFinal.SetActive(false);
-        panelConfiguracion.SetActive(false);
         panelAyuda.SetActive(false);
+        panelConfiguracionAudio.SetActive(false);
     }
 
     // Gestiona el botón Ayuda
@@ -234,11 +270,10 @@ public class ControlMenuInicio : MonoBehaviour
         panelInicio.SetActive(false);
         panelReino.SetActive(false);
         panelFinal.SetActive(false);
-        panelConfiguracion.SetActive(false);
         panelAyuda.SetActive(true);
+        panelConfiguracionAudio.SetActive(false);
 
     }
-
 
     // Gestiona el botón Configuración
     public void BotonConfiguracion()
@@ -246,8 +281,9 @@ public class ControlMenuInicio : MonoBehaviour
         panelInicio.SetActive(false);
         panelReino.SetActive(false);
         panelFinal.SetActive(false);
-        panelConfiguracion.SetActive(true);
         panelAyuda.SetActive(false);
+
+        panelConfiguracionAudio.SetActive(true);
     }
 
     public void BotonDesafio(int escena)
@@ -262,13 +298,17 @@ public class ControlMenuInicio : MonoBehaviour
 
     public void BotonMenuInicio()
     {
-        // Reinicia las variables del juego
-        GameManager.gameManager.ReiniciaJuego();
+        if (terminaJuego == false)
+        {
 
-        // Carga la escena 0
-        SceneManager.LoadScene(0);
+            // Reinicia las variables del juego
+            GameManager.gameManager.VolverMenuInicio();
+            
+        }
+        BotonVolverMenuInicio();
     }
 
+   
 }
 
     

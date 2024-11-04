@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31434e564935d134d88729de321e7ea4, type: 3}
+  m_Name: CalculoData 52
+  m_EditorClassIdentifier: 
+  Operando_1: {fileID: 21300000, guid: 0f5d1d88ec726ca4da689e54da206788, type: 3}
+  Operando_2: {fileID: 21300000, guid: 047abc14804a77643abba248a6117178, type: 3}
+  Operando_3: {fileID: 21300000, guid: 441a8bdb7d7c32545808bd4753e61e8a, type: 3}
+  Opcion_1: {fileID: 21300000, guid: c926ec6901d4ff6468805c6dbb5812bd, type: 3}
+  Opcion_2: {fileID: 21300000, guid: d3e71c9af9a89f7489d4f3ecfbb4f3f3, type: 3}
+  Opcion_3: {fileID: 21300000, guid: 922068c051b9fdc4ab4599746c6722a9, type: 3}
+  Operacion: '*'
+  Condicion: =
+  Resultado: {fileID: 21300000, guid: d3e71c9af9a89f7489d4f3ecfbb4f3f3, type: 3}
